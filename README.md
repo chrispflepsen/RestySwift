@@ -1,3 +1,3 @@
 # API
 
-A description of this package.
+A simple wrapper on top of URLSession
