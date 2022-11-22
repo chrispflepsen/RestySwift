@@ -7,13 +7,13 @@
 
 import Foundation
 
-public protocol User {
+public protocol AuthenticationUser {
     var id: String { get }
 }
 
 public protocol AuthenticationProvider {
     var isAuthenticated: Bool { get }
-    var user: User? { get }
+    var user: AuthenticationUser? { get }
     var status: AuthenticationStatus { get }
     
     func injectCredentials(request: URLRequest)
