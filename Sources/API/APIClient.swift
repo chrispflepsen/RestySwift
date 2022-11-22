@@ -18,11 +18,13 @@ public struct APIClient {
     var api: API!
     var authProvider: AuthenticationProvider?
     var cacheProvider: CacheProvider?
+    var versionProvider: VersionProvider?
     
     private let sessionProvider: SessionProvider!
     
     public init(api: API,
          authProvider: AuthenticationProvider? = nil,
+         versionProvider: VersionProvider? = nil,
          sessionProvider: some SessionProvider = URLSession(configuration: .default),
          cacheProvider: CacheProvider? = nil) {
         self.api = api
@@ -44,9 +46,11 @@ public struct APIClient {
         }
         
         //Perform HTTP request
-        var urlRequest = try URLRequest(baseUrl: api.baseUrl,
-                                        request: request)
-        authProvider?.injectCredentials(request: urlRequest)
+        let requestURL = api.baseUrl + (versionProvider?.versionString(forRequest: request) ?? "") + request.path
+        guard let url = URL(string: requestURL) else {
+            throw APIError.unableToBuildRequest
+        }
+        var urlRequest = URLRequest(url: url)
         urlRequest.injectHeaders(api.headers)
         urlRequest.httpBody = try api.encoder.encode(request.body)
         let (data, response) = try await sessionProvider.data(for: urlRequest)

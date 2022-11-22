@@ -8,7 +8,7 @@
 import Foundation
 
 public protocol API {
-    var baseUrl: URL { get }
+    var baseUrl: String { get }
     var headers: [String: String] { get }
     var encoder: JSONEncoder { get }
     var decoder: JSONDecoder { get }

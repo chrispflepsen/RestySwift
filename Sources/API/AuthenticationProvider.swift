@@ -20,6 +20,10 @@ public protocol AuthenticationProvider {
     func refreshToken() async throws -> AuthenticationStatus
 }
 
+public protocol VersionProvider {
+    func versionString(forRequest: some APIRequest) -> String
+}
+
 public enum AuthenticationStatus {
     case loggedIn
     case loggedOut
