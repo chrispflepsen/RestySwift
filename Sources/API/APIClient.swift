@@ -21,7 +21,7 @@ public struct APIClient {
     
     private let sessionProvider: SessionProvider!
     
-    init(api: API,
+    public init(api: API,
          authProvider: AuthenticationProvider? = nil,
          sessionProvider: some SessionProvider = URLSession(configuration: .default),
          cacheProvider: CacheProvider? = nil) {
