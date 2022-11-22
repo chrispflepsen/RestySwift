@@ -16,7 +16,7 @@ public protocol AuthenticationProvider {
     var user: AuthenticationUser? { get }
     var status: AuthenticationStatus { get }
     
-    func injectCredentials(request: URLRequest)
+    func injectCredentials(request: inout URLRequest)
     func refreshToken() async throws -> AuthenticationStatus
 }
 
