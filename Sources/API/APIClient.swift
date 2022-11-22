@@ -29,6 +29,7 @@ public struct APIClient {
          cacheProvider: CacheProvider? = nil) {
         self.api = api
         self.authProvider = authProvider
+        self.versionProvider = versionProvider
         self.sessionProvider = sessionProvider
         self.cacheProvider = cacheProvider
     }
@@ -47,11 +48,13 @@ public struct APIClient {
         
         //Perform HTTP request
         let requestURL = api.baseUrl + (versionProvider?.versionString(forRequest: request) ?? "") + request.path
+        print(requestURL)
         guard let url = URL(string: requestURL) else {
             throw APIError.unableToBuildRequest
         }
         var urlRequest = URLRequest(url: url)
-        urlRequest.injectHeaders(api.headers)
+        urlRequest.injectHeaders(api.headers.merging(request.parameters ?? [:], uniquingKeysWith: { _, second in second }))
+        urlRequest.httpMethod = request.httpMethod.rawValue
         urlRequest.httpBody = try api.encoder.encode(request.body)
         let (data, response) = try await sessionProvider.data(for: urlRequest)
         let httpStatus = response.httpStatus
