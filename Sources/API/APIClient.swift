@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol SessionProvider {
+public protocol SessionProvider {
     func data(for request: URLRequest) async throws -> (Data, URLResponse)
 }
 
@@ -31,7 +31,11 @@ public struct APIClient {
         self.cacheProvider = cacheProvider
     }
     
-    public func perform<T: APIRequest>(request: T, attemptStatus: AttemptStatus = .initial) async throws -> T.Response {
+    public func perform<T: APIRequest>(request: T) async throws -> T.Response {
+        return try await perform(request: request, attemptStatus: .initial)
+    }
+    
+    private func perform<T: APIRequest>(request: T, attemptStatus: AttemptStatus = .initial) async throws -> T.Response {
         
         // Read from cache if availible
         let cachedObject = cacheProvider?.object(forRequest: request)

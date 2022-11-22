@@ -16,7 +16,7 @@ public protocol APIRequest {
     var body: T { get }
 }
 
-extension APIRequest {
+public extension APIRequest {
     var httpMethod: HTTPMethod { .GET }
     var parameters: [String: String]? { nil }
     var body: EmptyBody? { EmptyBody() }

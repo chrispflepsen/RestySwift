@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum AttemptStatus {
+enum AttemptStatus {
     case initial
     case statusCode401
 }
