@@ -58,6 +58,9 @@ public struct APIClient {
         if let body = request.body {
             urlRequest.httpBody = try api.encoder.encode(body)
         }
+        if let authProvider = authProvider {
+            authProvider.injectCredentials(request: &urlRequest)
+        }
         let (data, response) = try await sessionProvider.data(for: urlRequest)
         let httpStatus = response.httpStatus
         
