@@ -16,9 +16,9 @@ extension URLSession: SessionProvider { }
 public struct APIClient {
     
     var api: API!
-    var authProvider: AuthenticationProvider?
-    var cacheProvider: CacheProvider?
-    var versionProvider: VersionProvider?
+    public var authProvider: AuthenticationProvider?
+    public var cacheProvider: CacheProvider?
+    public var versionProvider: VersionProvider?
     
     private let sessionProvider: SessionProvider!
     
