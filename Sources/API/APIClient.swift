@@ -1,0 +1,84 @@
+//
+//  APIClient.swift
+//  API
+//
+//  Created by Chris Pflepsen on 11/1/22.
+//
+
+import Foundation
+
+protocol SessionProvider {
+    func data(for request: URLRequest) async throws -> (Data, URLResponse)
+}
+
+extension URLSession: SessionProvider { }
+
+public struct APIClient {
+    
+    var api: API!
+    var authProvider: AuthenticationProvider?
+    var cacheProvider: CacheProvider?
+    
+    private let sessionProvider: SessionProvider!
+    
+    init(api: API,
+         authProvider: AuthenticationProvider? = nil,
+         sessionProvider: some SessionProvider = URLSession(configuration: .default),
+         cacheProvider: CacheProvider? = nil) {
+        self.api = api
+        self.authProvider = authProvider
+        self.sessionProvider = sessionProvider
+        self.cacheProvider = cacheProvider
+    }
+    
+    public func perform<T: APIRequest>(request: T, attemptStatus: AttemptStatus = .initial) async throws -> T.Response {
+        
+        // Read from cache if availible
+        let cachedObject = cacheProvider?.object(forRequest: request)
+        if let cachedObject = cachedObject {
+            return cachedObject
+        }
+        
+        //Perform HTTP request
+        var urlRequest = try URLRequest(baseUrl: api.baseUrl,
+                                        request: request)
+        authProvider?.injectCredentials(request: urlRequest)
+        urlRequest.injectHeaders(api.headers)
+        urlRequest.httpBody = try api.encoder.encode(request.body)
+        let (data, response) = try await sessionProvider.data(for: urlRequest)
+        let httpStatus = response.httpStatus
+        
+        // Handle re-auth (if needed)
+        if attemptStatus != .statusCode401,
+           httpStatus == .unauthorized,
+           authProvider != nil {
+            return try await handleAuthenticationNeeded(request: request)
+        }
+        
+        guard httpStatus.isSuccess else {
+            throw APIError.invalidStatus(httpStatus)
+        }
+        
+        // Decode and store to cache
+        let responseObject = try decodeJson(type: T.Response.self, data: data)
+        cacheProvider?.store(object: responseObject, for: request)
+        return responseObject
+    }
+    
+    private func decodeJson<T: Decodable>(type: T.Type, data: Data) throws -> T {
+        do {
+            return try api.decoder.decode(T.self, from: data)
+        } catch let error as DecodingError {
+            throw APIError.invalidJSON(error)
+        }
+    }
+    
+    private func handleAuthenticationNeeded<T: APIRequest>(request: T) async throws -> T.Response {
+        let unauthorizedError = APIError.invalidStatus(.unauthorized)
+        guard let authProvider = authProvider else { throw unauthorizedError }
+        let result = try await authProvider.refreshToken()
+        guard result == .loggedIn else { throw unauthorizedError }
+        return try await perform(request: request, attemptStatus: .statusCode401)
+    }
+    
+}
