@@ -55,7 +55,9 @@ public struct APIClient {
         var urlRequest = URLRequest(url: url)
         urlRequest.injectHeaders(api.headers.merging(request.parameters ?? [:], uniquingKeysWith: { _, second in second }))
         urlRequest.httpMethod = request.httpMethod.rawValue
-        urlRequest.httpBody = try api.encoder.encode(request.body)
+        if let body = request.body {
+            urlRequest.httpBody = try api.encoder.encode(body)
+        }
         let (data, response) = try await sessionProvider.data(for: urlRequest)
         let httpStatus = response.httpStatus
         
