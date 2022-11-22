@@ -8,12 +8,12 @@
 import Foundation
 
 public protocol APIRequest {
-    associatedtype T: Encodable
+    associatedtype Body: Encodable
     associatedtype Response: Decodable
     var httpMethod: HTTPMethod { get }
     var path: String { get }
     var parameters: [String: String]? { get }
-    var body: T { get }
+    var body: Body { get }
 }
 
 public extension APIRequest {
