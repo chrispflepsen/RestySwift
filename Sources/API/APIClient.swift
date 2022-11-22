@@ -48,12 +48,17 @@ public struct APIClient {
         
         //Perform HTTP request
         let requestURL = api.baseUrl + (versionProvider?.versionString(forRequest: request) ?? "") + request.path
-        print(requestURL)
-        guard let url = URL(string: requestURL) else {
+        var components = URLComponents(string: requestURL)
+        var items = [URLQueryItem]()
+        for (key, value) in request.parameters ?? [:] {
+            items.append(URLQueryItem(name: key, value: value))
+        }
+        components?.queryItems = items
+        guard let url = components?.url else {
             throw APIError.unableToBuildRequest
         }
         var urlRequest = URLRequest(url: url)
-        urlRequest.injectHeaders(api.headers.merging(request.parameters ?? [:], uniquingKeysWith: { _, second in second }))
+        urlRequest.injectHeaders(api.headers)
         urlRequest.httpMethod = request.httpMethod.rawValue
         if let body = request.body {
             urlRequest.httpBody = try api.encoder.encode(body)
