@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  URLBuilder.swift
 //  
 //
 //  Created by Chris Pflepsen on 11/22/22.
@@ -8,7 +8,7 @@
 import Foundation
 
 enum URLBuilder {
-    static func build(_ urlString: String, parameters: [String: String]?) throws -> URL {
+    static func build(_ urlString: String, parameters: [String: QueryParameter]?) throws -> URL {
         guard let parameters = parameters,
               !parameters.isEmpty else {
             return try buildFromString(string: urlString)
@@ -23,11 +23,18 @@ enum URLBuilder {
         return url
     }
     
-    private static func buildFromComponents(_ urlString: String, parameters: [String: String]) throws -> URL  {
+    private static func buildFromComponents(_ urlString: String, parameters: [String: QueryParameter]) throws -> URL  {
         var components = URLComponents(string: urlString)
         var items = [URLQueryItem]()
         for (key, value) in parameters {
-            items.append(URLQueryItem(name: key, value: value))
+            switch value {
+            case .single(let string):
+                items.append(URLQueryItem(name: key, value: string))
+            case .array(let array):
+                array.forEach {
+                    items.append(URLQueryItem(name: key, value: $0))
+                }
+            }
         }
         components?.queryItems = items
         guard let url = components?.url else {
