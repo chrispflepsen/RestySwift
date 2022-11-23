@@ -22,5 +22,5 @@ public protocol APIRequest {
 }
 
 public extension APIRequest {
-    var parameters: [String: String]? { nil }
+    var parameters: [String: QueryParameter]? { nil }
 }
