@@ -8,14 +8,10 @@
 import Foundation
 
 public protocol AuthenticationUser {
-    var id: String { get }
+    var id: String? { get }
 }
 
 public protocol AuthenticationProvider {
-    var isAuthenticated: Bool { get }
-    var user: AuthenticationUser? { get }
-    var status: AuthenticationStatus { get }
-    
     func injectCredentials(request: inout URLRequest)
     func refreshToken() async throws -> AuthenticationStatus
 }
