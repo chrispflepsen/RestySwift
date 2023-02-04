@@ -8,12 +8,12 @@
 import Foundation
 
 enum URLBuilder {
-    static func build(_ urlString: String, parameters: [String: QueryParameter]?) throws -> URL {
+    static func build(_ urlString: String, parameters: [String: QueryParameter]?, encoder: JSONEncoder) throws -> URL {
         guard let parameters = parameters,
               !parameters.isEmpty else {
             return try buildFromString(string: urlString)
         }
-        return try buildFromComponents(urlString, parameters: parameters)
+        return try buildFromComponents(urlString, parameters: parameters, encoder: encoder)
     }
     
     private static func buildFromString(string: String) throws -> URL {
@@ -23,7 +23,7 @@ enum URLBuilder {
         return url
     }
     
-    private static func buildFromComponents(_ urlString: String, parameters: [String: QueryParameter]) throws -> URL  {
+    private static func buildFromComponents(_ urlString: String, parameters: [String: QueryParameter], encoder: JSONEncoder) throws -> URL  {
         var components = URLComponents(string: urlString)
         var items = [URLQueryItem]()
         for (key, value) in parameters {
@@ -34,6 +34,9 @@ enum URLBuilder {
                 array.forEach {
                     items.append(URLQueryItem(name: key, value: $0))
                 }
+            case .json(let encodable):
+                let jsonString = try? encoder.urlEncode(encodable)
+                items.append(URLQueryItem(name: key, value: jsonString))
             }
         }
         components?.queryItems = items

@@ -10,6 +10,7 @@ import Foundation
 public enum QueryParameter {
     case single(String)
     case array([String])
+    case json(Encodable)
 }
 
 public protocol APIRequest {

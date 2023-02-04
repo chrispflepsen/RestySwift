@@ -48,7 +48,7 @@ public struct APIClient {
         
         //Perform HTTP request
         let requestURL = api.baseUrl + (versionProvider?.versionString(forRequest: request) ?? "") + request.path
-        let url = try URLBuilder.build(requestURL, parameters: request.parameters)
+        let url = try URLBuilder.build(requestURL, parameters: request.parameters, encoder: api.encoder)
         var urlRequest = URLRequest(url: url)
         urlRequest.injectHeaders(api.headers)
         urlRequest.httpMethod = request.httpMethod.rawValue
