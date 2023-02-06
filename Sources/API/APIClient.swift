@@ -48,17 +48,7 @@ public struct APIClient {
         }
         
         //Perform HTTP request
-        let requestURL = api.baseUrl + (versionProvider?.versionString(forRequest: request) ?? "") + request.path
-        let url = try URLBuilder.build(requestURL, parameters: request.parameters, encoder: api.encoder)
-        var urlRequest = URLRequest(url: url)
-        urlRequest.injectHeaders(request.headers ?? api.headers)
-        urlRequest.httpMethod = request.httpMethod.rawValue
-        if let body = request.body {
-            urlRequest.httpBody = try api.encoder.encode(body)
-        }
-        if let authProvider = authProvider {
-            authProvider.injectCredentials(request: &urlRequest)
-        }
+        let urlRequest = try buildRequest(request: request)
         let (data, response) = try await sessionProvider.data(for: urlRequest)
         let httpStatus = response.httpStatus
         
@@ -83,18 +73,23 @@ public struct APIClient {
         guard let fileData = fileUpload.body?.bodyData else {
             throw APIError.unableToBuildRequest
         }
-        //Perform HTTP request
-        let request = fileUpload
+        let urlRequest = try buildRequest(request: fileUpload)
+        let (_, _) = try await sessionProvider.upload(for: urlRequest, from: fileData)
+    }
+
+    private func buildRequest<T: APIRequest>(request: T) throws -> URLRequest {
         let requestURL = api.baseUrl + (versionProvider?.versionString(forRequest: request) ?? "") + request.path
         let url = try URLBuilder.build(requestURL, parameters: request.parameters, encoder: api.encoder)
         var urlRequest = URLRequest(url: url)
+        urlRequest.injectHeaders(request.headers ?? api.headers)
+        urlRequest.httpMethod = request.httpMethod.rawValue
         if let body = request.body {
             urlRequest.httpBody = try api.encoder.encode(body)
         }
         if let authProvider = authProvider {
             authProvider.injectCredentials(request: &urlRequest)
         }
-        let (_, _) = try await sessionProvider.upload(for: urlRequest, from: fileData)
+        return urlRequest
     }
 
     
