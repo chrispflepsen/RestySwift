@@ -6,7 +6,7 @@ final class APITests: XCTestCase {
     override func setUp() async throws {
     }
     
-    func testExample() async throws {
-
+    func testMimeType() async throws {
+        XCTAssert("file.pdf".mimeType == "application/pdf")
     }
 }

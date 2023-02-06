@@ -9,6 +9,7 @@ import Foundation
 
 public protocol SessionProvider {
     func data(for request: URLRequest) async throws -> (Data, URLResponse)
+    func upload(for request: URLRequest, from: Data) async throws -> (Data, URLResponse)
 }
 
 extension URLSession: SessionProvider { }
@@ -77,6 +78,25 @@ public struct APIClient {
         cacheProvider?.store(object: responseObject, for: request)
         return responseObject
     }
+
+    public func performFileUpload(_ fileUpload: FileUploadRequest) async throws {
+        guard let fileData = fileUpload.body?.bodyData else {
+            throw APIError.unableToBuildRequest
+        }
+        //Perform HTTP request
+        let request = fileUpload
+        let requestURL = api.baseUrl + (versionProvider?.versionString(forRequest: request) ?? "") + request.path
+        let url = try URLBuilder.build(requestURL, parameters: request.parameters, encoder: api.encoder)
+        var urlRequest = URLRequest(url: url)
+        if let body = request.body {
+            urlRequest.httpBody = try api.encoder.encode(body)
+        }
+        if let authProvider = authProvider {
+            authProvider.injectCredentials(request: &urlRequest)
+        }
+        let (_, _) = try await sessionProvider.upload(for: urlRequest, from: fileData)
+    }
+
     
     private func decodeJson<T: Decodable>(type: T.Type, data: Data) throws -> T {
         do {
