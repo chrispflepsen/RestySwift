@@ -8,23 +8,21 @@
 import Foundation
 
 enum URLBuilder {
-    static func build(_ urlString: String, parameters: [String: QueryParameter]?, encoder: JSONEncoder) throws -> URL {
-        guard let parameters = parameters,
-              !parameters.isEmpty else {
-            return try buildFromString(string: urlString)
+    static func build(_ host: String, path: String? = nil, parameters: [String: QueryParameter]? = nil) throws -> URL {
+        guard let baseUrl = URL(string: host) else { throw APIError.unableToBuildRequest }
+        var components = URLComponents(url: baseUrl, resolvingAgainstBaseURL: false)
+//        components.host = host
+        if let path = path {
+            components?.path = path
         }
-        return try buildFromComponents(urlString, parameters: parameters, encoder: encoder)
-    }
-    
-    private static func buildFromString(string: String) throws -> URL {
-        guard let url = URL(string: string) else {
-            throw APIError.unableToBuildRequest
+        if let parameters = parameters {
+            components?.queryItems = buildQueryItem(parameters)
         }
+        guard let url = components?.url else { throw APIError.unableToBuildRequest }
         return url
     }
-    
-    private static func buildFromComponents(_ urlString: String, parameters: [String: QueryParameter], encoder: JSONEncoder) throws -> URL  {
-        var components = URLComponents(string: urlString)
+
+    private static func buildQueryItem(_ parameters: [String: QueryParameter]) -> [URLQueryItem] {
         var items = [URLQueryItem]()
         for (key, value) in parameters {
             switch value {
@@ -34,17 +32,8 @@ enum URLBuilder {
                 array.forEach {
                     items.append(URLQueryItem(name: key, value: $0))
                 }
-            case .json(let encodable):
-                let jsonString = try? encoder.urlEncode(encodable)
-                items.append(URLQueryItem(name: key, value: jsonString))
             }
         }
-        components?.queryItems = items
-        guard let url = components?.url else {
-            throw APIError.unableToBuildRequest
-        }
-        return url
+        return items
     }
 }
-
-

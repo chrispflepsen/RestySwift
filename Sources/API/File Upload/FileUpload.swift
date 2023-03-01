@@ -49,11 +49,6 @@ public struct FileUpload: Encodable {
         return Data(body)
     }
 
-    public init(url: URL) throws {
-        let data = try Data(contentsOf: url)
-        self.init(data: data, fileName: url.pathExtension)
-    }
-
     public init(data: Data, fileName: String) {
         self.data = data
         self.fileName = fileName

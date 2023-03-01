@@ -8,3 +8,4 @@
 import Foundation
 
 public struct EmptyBody: Codable { }
+public struct EmptyResponse: Codable { }

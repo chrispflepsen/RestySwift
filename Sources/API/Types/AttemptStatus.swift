@@ -9,5 +9,5 @@ import Foundation
 
 enum AttemptStatus {
     case initial
-    case statusCode401
+    case retryUnauthorized
 }

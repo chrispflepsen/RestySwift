@@ -8,11 +8,8 @@
 import Foundation
 
 public enum APIError: Error {
-    case unauthorized
-    case forbidden
     case unableToBuildRequest
-    case invalidStatus(HTTPStatus)
+    case invalidHTTPStatus(HTTPStatus)
     case invalidJSON(DecodingError)
     case unknown
-    case reAuth
 }
