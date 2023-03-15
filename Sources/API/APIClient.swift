@@ -85,19 +85,19 @@ public struct APIClient {
     private func handleNonSuccessStatus<T: APIRequest>(request: T, httpStatus: HTTPStatus, attemptStatus: AttemptStatus) async throws -> T.Response {
         guard attemptStatus == .initial,
               httpStatus == .unauthorized,
-              let authProvider = authProvider else {
+              let authProvider = authProvider,
+              authProvider.supportsRefresh else {
             throw APIError.invalidHTTPStatus(httpStatus)
         }
-
         return try await performReauth(request: request, provider: authProvider)
     }
 
     private func performReauth<T: APIRequest>(request: T, provider: AuthenticationProvider) async throws -> T.Response {
         let authResult = try await provider.refreshAuthentication()
         switch authResult {
-        case .loggedIn:
+        case .success:
             return try await perform(request: request, attemptStatus: .retryUnauthorized)
-        case .loggedOut:
+        case .failed:
             throw APIError.invalidHTTPStatus(.unauthorized)
         }
     }
@@ -140,9 +140,9 @@ public struct APIClient {
     private func performFileUploadReauth(request: FileUploadRequest, provider: AuthenticationProvider) async throws {
         let authResult = try await provider.refreshAuthentication()
         switch authResult {
-        case .loggedIn:
+        case .success:
             return try await performFileUpload(request, attemptStatus: .retryUnauthorized)
-        case .loggedOut:
+        case .failed:
             throw APIError.invalidHTTPStatus(.unauthorized)
         }
     }

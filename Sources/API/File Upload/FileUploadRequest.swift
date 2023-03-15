@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  FileUploadRequest.swift
 //  
 //
 //  Created by Chris Pflepsen on 2/6/23.

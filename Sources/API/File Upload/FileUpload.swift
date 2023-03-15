@@ -24,7 +24,7 @@ extension String {
         }
     }
 
-    internal var mimeType: String {
+    var mimeType: String {
         let uti = UTType(filenameExtension: fileUrl.pathExtension)
         return uti?.preferredMIMEType ?? ""
     }

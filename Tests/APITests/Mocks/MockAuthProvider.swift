@@ -22,16 +22,16 @@ class MockAuthProvider: AuthenticationProvider {
         injectCredentialsCalled += 1
     }
 
-    func refreshAuthentication() async throws -> AuthenticationStatus {
+    func refreshAuthentication() async throws -> AuthenticationRefresh {
         refreshTokenCalled += 1
-        return .loggedIn
+        return .success
     }
 }
 
 class MockFailingAuthProvider: MockAuthProvider {
-    override func refreshAuthentication() async throws -> AuthenticationStatus {
+    override func refreshAuthentication() async throws -> AuthenticationRefresh {
         refreshTokenCalled += 1
-        return .loggedOut
+        return .failed
     }
 }
 

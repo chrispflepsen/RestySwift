@@ -37,6 +37,8 @@ Perform the request
 
 ```swift
 let client = APIClient(api: api)
+
+// the `dogs` object is of type [Dog] based on the `Response` typealias of the request
 let dogs = try await client.perform(request: DogListRequest())
 ```
 
@@ -63,3 +65,12 @@ public protocol APIRequest {
 
 ```
 
+## Installation
+
+### Swift Package Manager
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/chrispflepsen/RestySwift.git")
+]
+```
