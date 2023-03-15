@@ -1,6 +1,6 @@
 # RestySwift💤
 
-A barebones wrapper on top of URLSession for JSON based API(s) with support for authentication, authentication refresh, versioning, and local caching via protocols
+A barebones wrapper on top of URLSession for JSON based REST API(s) with support for authentication, authentication refresh, versioning, and local caching via protocols
 
 ## Basic Example
 
