@@ -6,7 +6,7 @@
 //
 
 import Foundation
-@testable import API
+@testable import RestySwift
 
 enum SessionResult {
     case success(Encodable)

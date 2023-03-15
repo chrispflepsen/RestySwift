@@ -89,10 +89,10 @@ public struct APIClient {
               authProvider.supportsRefresh else {
             throw APIError.invalidHTTPStatus(httpStatus)
         }
-        return try await performReauth(request: request, provider: authProvider)
+        return try await performAuthenticationRefresh(request: request, provider: authProvider)
     }
 
-    private func performReauth<T: APIRequest>(request: T, provider: AuthenticationProvider) async throws -> T.Response {
+    private func performAuthenticationRefresh<T: APIRequest>(request: T, provider: AuthenticationProvider) async throws -> T.Response {
         let authResult = try await provider.refreshAuthentication()
         switch authResult {
         case .success:
@@ -134,10 +134,10 @@ public struct APIClient {
             throw APIError.invalidHTTPStatus(httpStatus)
         }
 
-        return try await performFileUploadReauth(request: request, provider: authProvider)
+        return try await performFileUploadAuthenticationRefresh(request: request, provider: authProvider)
     }
 
-    private func performFileUploadReauth(request: FileUploadRequest, provider: AuthenticationProvider) async throws {
+    private func performFileUploadAuthenticationRefresh(request: FileUploadRequest, provider: AuthenticationProvider) async throws {
         let authResult = try await provider.refreshAuthentication()
         switch authResult {
         case .success:

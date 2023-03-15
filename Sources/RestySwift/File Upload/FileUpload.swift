@@ -17,7 +17,7 @@ extension NSMutableData {
 
 extension String {
     fileprivate var fileUrl: URL {
-        if #available(iOS 16.0, *) {
+        if #available(iOS 16.0, macOS 13.0, *) {
             return URL(filePath: self)
         } else {
             return URL(fileURLWithPath: self)

@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import API
+@testable import RestySwift
 
 final class FileUploadTests: XCTestCase {
 
@@ -83,7 +83,7 @@ final class FileUploadTests: XCTestCase {
         }
     }
 
-    func testReAuth() async throws {
+    func testRefreshAuthentication() async throws {
         sessionProvider.results = [
             .unauthorized,
             .noContent

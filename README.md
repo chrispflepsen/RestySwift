@@ -7,6 +7,8 @@ A protocol based barebones wrapper on top of URLSession for JSON based REST API(
 Define the API
 
 ```swift
+import RestySwift
+
 struct TestApi: API {
     var baseUrl: String = "http://www.api.test"
     var headers: [String : String] = [:]

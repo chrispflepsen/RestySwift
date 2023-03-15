@@ -6,7 +6,7 @@
 //
 
 import Foundation
-@testable import API
+@testable import RestySwift
 
 class MockEmptyCacheProvider: CacheProvider {
     var storedObjects = 0

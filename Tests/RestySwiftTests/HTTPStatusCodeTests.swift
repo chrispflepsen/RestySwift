@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import API
+@testable import RestySwift
 
 final class HTTPStatusCodeTests: XCTestCase {
 

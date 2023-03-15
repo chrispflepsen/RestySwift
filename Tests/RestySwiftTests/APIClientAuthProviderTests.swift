@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import API
+@testable import RestySwift
 
 final class APIClientAuthProviderTests: XCTestCase {
 
@@ -78,7 +78,7 @@ final class APIClientAuthProviderTests: XCTestCase {
         }
     }
 
-    func testReauthFailure() async throws {
+    func testrefreshAuthenticationFailure() async throws {
         let authProvider = MockAuthProvider()
         client.authProvider = authProvider
         sessionProvider.results = [

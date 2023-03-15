@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "API"
-               BuildableName = "API"
-               BlueprintName = "API"
+               BlueprintIdentifier = "RestySwift"
+               BuildableName = "RestySwift"
+               BlueprintName = "RestySwift"
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
@@ -28,9 +28,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "APITests"
-               BuildableName = "APITests"
-               BlueprintName = "APITests"
+               BlueprintIdentifier = "RestySwiftTests"
+               BuildableName = "RestySwiftTests"
+               BlueprintName = "RestySwiftTests"
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
@@ -40,26 +40,15 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      codeCoverageEnabled = "YES"
-      onlyGenerateCoverageForSpecifiedTargets = "YES">
-      <CodeCoverageTargets>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "API"
-            BuildableName = "API"
-            BlueprintName = "API"
-            ReferencedContainer = "container:">
-         </BuildableReference>
-      </CodeCoverageTargets>
+      shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
          <TestableReference
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "APITests"
-               BuildableName = "APITests"
-               BlueprintName = "APITests"
+               BlueprintIdentifier = "RestySwiftTests"
+               BuildableName = "RestySwiftTests"
+               BlueprintName = "RestySwiftTests"
                ReferencedContainer = "container:">
             </BuildableReference>
          </TestableReference>
@@ -85,9 +74,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "API"
-            BuildableName = "API"
-            BlueprintName = "API"
+            BlueprintIdentifier = "RestySwift"
+            BuildableName = "RestySwift"
+            BlueprintName = "RestySwift"
             ReferencedContainer = "container:">
          </BuildableReference>
       </MacroExpansion>
