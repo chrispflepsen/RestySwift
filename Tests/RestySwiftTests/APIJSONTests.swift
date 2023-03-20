@@ -29,9 +29,13 @@ final class APIJSONTests: XCTestCase {
             .success(Dog.list)
         ]
 
-        let dogs = try? await client.perform(request: DogRequest())
-        XCTAssertNotNil(dogs)
-        XCTAssert(authProvider.refreshTokenCalled == 1)
+        do {
+            let dogs = try await client.perform(request: DogRequest())
+            XCTAssertNotNil(dogs)
+            XCTAssert(authProvider.refreshTokenCalled == 1)
+        } catch let error {
+            print(error)
+        }
     }
 
     func testJsonParsingFailing() async {

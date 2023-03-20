@@ -158,27 +158,26 @@ struct DogRequest: APIRequest {
 //}
 
 @propertyWrapper
-class Resty<U: API, T: APIRequest> {
-//    private var _wrappedValue: T.Response?
-    var wrappedValue: T.Response?
+public class Resty<U: API, T: APIRequest>: DynamicProperty {
+    @Published public var wrappedValue: T.Response?
     private let request: T
     private let api: U
 
-    init(_ api: U, _ request: T) {
+    public var projectedValue: T.Response? { self.wrappedValue }
+
+    public init(_ api: U, _ request: T) {
         self.request = request
         self.api = api
-        update()
+        performRequest()
     }
 
-    public func update() {
+    public func performRequest() {
         Task {
-            try? await performRequest()
+            let result = try? await api.perform(request: request)
+            DispatchQueue.main.async {
+                self.wrappedValue = result
+            }
         }
-    }
-
-    private func performRequest() async throws {
-        let result = try await api.perform(request: request)
-        wrappedValue = result
     }
 }
 
@@ -192,7 +191,11 @@ class Resty<U: API, T: APIRequest> {
 struct DogView: View {
 
     @Resty(DogAPI(), DogRequest())
-    var dog: Dog?
+    var doggy: Dog?
+
+//    @StateObject var dog = Resty(DogAPI(), DogRequest())
+//    @Resty(DogAPI(), DogRequest())
+//    var dog: Dog?
 
 //    @Response(<#T##api: _##_#>, <#T##request: _##_#>)
 
@@ -200,11 +203,13 @@ struct DogView: View {
 
     var body: some View {
         Spacer()
-        if let dog = dog {
-            Text(dog.name)
-        } else {
-            Text("Loading")
-        }
+//        dog.
+//        if let dog = dog {
+//            
+//            Text(dog.name)
+//        } else {
+//            Text("Loading")
+//        }
         Spacer()
         Button {
 //            $dog.update()

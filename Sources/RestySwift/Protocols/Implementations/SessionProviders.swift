@@ -7,7 +7,27 @@
 
 import Foundation
 
-enum SessionResult {
+@propertyWrapper
+struct SafeIndex {
+    private var maxIndex: Int!
+    private var index: Int = 0
+    init<T>(_ currentIndex: Int = 0, _ elements: [T]) {
+        self.maxIndex = elements.count - 1
+        self.wrappedValue = currentIndex
+    }
+    var wrappedValue: Int {
+        get { index }
+        set {
+            guard newValue > 0 else {
+                index = 0
+                return
+            }
+            index = min(newValue, maxIndex)
+        }
+    }
+}
+
+public enum SessionResult {
     case success(Encodable)
     case noContent
     case unauthorized
@@ -15,7 +35,7 @@ enum SessionResult {
     case error(Error)
 }
 
-enum DataProvider {
+public enum DataProvider {
     case standard
     case just(Encodable)
     case error(Error)
@@ -35,7 +55,7 @@ enum DataProvider {
     }
 }
 
-enum ConstantProvider {
+public enum ConstantProvider {
         case data(Encodable)
         case error(Error)
 
@@ -49,12 +69,12 @@ enum ConstantProvider {
     }
 }
 
-enum Series {
+public enum Series {
     case single(SessionResult)
     case multiple([SessionResult])
 }
 
-class SeriesProvider {
+public class SeriesProvider {
 
     // Likely need support custom encoder and decoders
     private let encoder = JSONEncoder()
@@ -67,14 +87,15 @@ class SeriesProvider {
     }
     private var resultIndex = 0
 
-    init(series: Series) {
+    public init(series: Series) {
         self.series = series
     }
 
     private func nextResponse(request: URLRequest) throws -> (Data, URLResponse) {
         switch series {
         case .multiple(let results):
-            let result = results[resultIndex]
+            @SafeIndex(resultIndex, results) var nextIndex
+            let result = results[nextIndex]
             resultIndex += 1
             return try response(request: request, result: result)
         case .single(let result):
@@ -113,11 +134,11 @@ class SeriesProvider {
 
 extension SeriesProvider: SessionProvider {
 
-    func data(for request: URLRequest) async throws -> (Data, URLResponse) {
+    public func data(for request: URLRequest) async throws -> (Data, URLResponse) {
         return try nextResponse(request: request)
     }
 
-    func upload(for request: URLRequest, from: Data) async throws -> (Data, URLResponse) {
+    public func upload(for request: URLRequest, from: Data) async throws -> (Data, URLResponse) {
         return try nextResponse(request: request)
     }
 }

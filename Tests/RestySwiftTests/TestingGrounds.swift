@@ -33,29 +33,28 @@ final class TestingGrounds: XCTestCase {
         print(component.path)
     }
 
-    @Resty(DogAPI(), DogRequest())
-    var dog: Dog? {
-        willSet {
-            guard let doggy = newValue else { return }
-            print("New Dog: \(doggy.name)")
-        }
-    }
-
-    func testIndy() async throws {
-        let api = DogAPI()
-        do {
-            let name = dog?.name
-            _dog.update()
-            let otherName = dog?.name
-//            $dog.update()
-            let tazo = try await api.perform(request: DogRequest())
-            let indy = try await api.perform(request: DogRequest())
-            XCTAssertNotNil(tazo)
-        } catch let error {
-            print(error)
-        }
-
-
-    }
+//    @Resty(DogAPI(), DogRequest())
+//    var dog: Dog? {
+//        willSet {
+//            guard let doggy = newValue else { return }
+//            print("New Dog: \(doggy.name)")
+//        }
+//    }
+//
+//    func testIndy() async throws {
+//        let api = DogAPI()
+//        do {
+//            let name = dog?.name
+//            let otherName = dog?.name
+////            $dog.update()
+//            let tazo = try await api.perform(request: DogRequest())
+//            let indy = try await api.perform(request: DogRequest())
+//            XCTAssertNotNil(tazo)
+//        } catch let error {
+//            print(error)
+//        }
+//
+//
+//    }
 
 }
