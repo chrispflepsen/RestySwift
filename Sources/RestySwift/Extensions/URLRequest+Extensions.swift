@@ -14,9 +14,10 @@ extension URLRequest {
                         versionProvider: VersionProvider?,
                         authProvider: AuthenticationProvider?) throws {
         
-        let urlPath = (versionProvider?.versionString(forRequest: request) ?? "") + request.path
+        let pathComponent = PathComponent(versionProvider?.versionString(forRequest: request)) + PathComponent(request.path)
+
         let url = try URLBuilder.build(api.baseUrl,
-                                       path: urlPath,
+                                       path: pathComponent.path,
                                        parameters: request.parameters)
         self.init(url: url)
         var headers = api.headers

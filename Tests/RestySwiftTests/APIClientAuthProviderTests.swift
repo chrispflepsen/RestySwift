@@ -8,16 +8,52 @@
 import XCTest
 @testable import RestySwift
 
+struct BaseAPI: API {
+    var baseUrl: String = "test.com"
+    var headers = [String : String]()
+    var encoder: JSONEncoder = JSONEncoder()
+    var decoder: JSONDecoder = JSONDecoder()
+}
+
+struct CustomAPI: API {
+    var baseUrl: String
+    var headers: [String : String]
+    var encoder: JSONEncoder
+    var decoder: JSONDecoder
+
+    var cacheProvider: CacheProvider?
+    var authProvider: AuthenticationProvider?
+    var versionProvider: VersionProvider?
+    var sessionProvider: SessionProvider
+
+    init(baseAPI: BaseAPI = BaseAPI(),
+         cacheProvider: CacheProvider?,
+         authProvider: AuthenticationProvider?,
+         versionProvider: VersionProvider?,
+         sessionProvider: SessionProvider) {
+        self.baseUrl = baseAPI.baseUrl
+        self.headers = baseAPI.headers
+        self.encoder = baseAPI.encoder
+        self.decoder = baseAPI.decoder
+
+        self.cacheProvider = cacheProvider
+        self.authProvider = authProvider
+        self.versionProvider = versionProvider
+        self.sessionProvider = sessionProvider
+    }
+
+
+}
+
 final class APIClientAuthProviderTests: XCTestCase {
 
     let api = TestApi()
     let versionProvider = MockVersionProvider()
     let sessionProvider = MockSessionProvider()
-    var client: APIClient!
+    var client: API!
 
     override func setUp() async throws {
-        client = APIClient(api: api,
-                           cacheProvider: nil,
+        client = CustomAPI(cacheProvider: nil,
                            authProvider: nil,
                            versionProvider: versionProvider,
                            sessionProvider: sessionProvider)

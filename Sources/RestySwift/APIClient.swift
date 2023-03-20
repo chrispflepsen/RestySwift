@@ -7,45 +7,7 @@
 
 import Foundation
 
-protocol SessionProvider {
-    func data(for request: URLRequest) async throws -> (Data, URLResponse)
-    func upload(for request: URLRequest, from: Data) async throws -> (Data, URLResponse)
-}
-
-extension URLSession: SessionProvider { }
-
-public struct APIClient {
-    
-    var api: API!
-    public var authProvider: AuthenticationProvider?
-    public var cacheProvider: CacheProvider?
-    public var versionProvider: VersionProvider?
-    
-    private let sessionProvider: SessionProvider!
-    
-    public init(api: API,
-                cacheProvider: CacheProvider? = nil,
-                authProvider: AuthenticationProvider? = nil,
-                versionProvider: VersionProvider? = nil,
-                urlSession: URLSession = URLSession(configuration: .default)) {
-        self.init(api: api,
-                  cacheProvider: cacheProvider,
-                  authProvider: authProvider,
-                  versionProvider: versionProvider,
-                  sessionProvider: urlSession)
-    }
-
-    init(api: API,
-         cacheProvider: CacheProvider? = nil,
-         authProvider: AuthenticationProvider? = nil,
-         versionProvider: VersionProvider? = nil,
-         sessionProvider: some SessionProvider) {
-        self.api = api
-        self.cacheProvider = cacheProvider
-        self.authProvider = authProvider
-        self.versionProvider = versionProvider
-        self.sessionProvider = sessionProvider
-    }
+extension API {
 
     // MARK: - Request
 
@@ -64,7 +26,7 @@ public struct APIClient {
         
         //Perform HTTP request
         let urlRequest = try URLRequest(request: request,
-                                        api: api,
+                                        api: self,
                                         versionProvider: versionProvider,
                                         authProvider: authProvider)
 
@@ -113,7 +75,7 @@ public struct APIClient {
             throw APIError.unableToBuildRequest
         }
         let urlRequest = try URLRequest(request: fileUpload,
-                                        api: api,
+                                        api: self,
                                         versionProvider: versionProvider,
                                         authProvider: authProvider)
 
@@ -151,7 +113,7 @@ public struct APIClient {
 
     private func decodeJson<T: Decodable>(type: T.Type, data: Data) throws -> T {
         do {
-            return try api.decoder.decode(T.self, from: data)
+            return try self.decoder.decode(T.self, from: data)
         } catch let error as DecodingError {
             throw APIError.invalidJSON(error)
         }

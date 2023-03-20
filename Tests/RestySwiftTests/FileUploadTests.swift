@@ -14,13 +14,12 @@ final class FileUploadTests: XCTestCase {
     let authProvider = MockAuthProvider()
     let versionProvider = MockVersionProvider()
     let sessionProvider = MockSessionProvider()
-    var client: APIClient!
+    var client: API!
 
     let fileUpload = FileUpload(data: Data(count: 1024), fileName: "file.txt")
 
     override func setUpWithError() throws {
-        client = APIClient(api: api,
-                           cacheProvider: nil,
+        client = CustomAPI(cacheProvider: nil,
                            authProvider: authProvider,
                            versionProvider: versionProvider,
                            sessionProvider: sessionProvider)

@@ -14,11 +14,10 @@ final class APIJSONTests: XCTestCase {
     let authProvider = MockAuthProvider()
     let versionProvider = MockVersionProvider()
     let sessionProvider = MockSessionProvider()
-    var client: APIClient!
+    var client: API!
 
     override func setUp() async throws {
-        client = APIClient(api: api,
-                           cacheProvider: nil,
+        client = CustomAPI(cacheProvider: nil,
                            authProvider: authProvider,
                            versionProvider: versionProvider,
                            sessionProvider: sessionProvider)

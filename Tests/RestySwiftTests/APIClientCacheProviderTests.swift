@@ -14,11 +14,10 @@ final class APIClientCacheProviderTests: XCTestCase {
     let versionProvider = MockVersionProvider()
     let sessionProvider = MockSessionProvider()
     let cacheProvider = MockCacheProvider()
-    var client: APIClient!
+    var client: API!
 
     override func setUp() async throws {
-        client = APIClient(api: api,
-                           cacheProvider: cacheProvider,
+        client = CustomAPI(cacheProvider: cacheProvider,
                            authProvider: nil,
                            versionProvider: versionProvider,
                            sessionProvider: sessionProvider)
