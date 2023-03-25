@@ -65,57 +65,57 @@ struct PathComponent {
 
 import SwiftUI
 
-struct DogProvider: SessionProvider {
-    func data(for request: URLRequest) async throws -> (Data, URLResponse) {
-        let indy = Dog(name: "Indy", age: 3, breed: "Golden")
-        let data = (try? JSONEncoder().encode(indy)) ?? Data()
-        return (data, urlResponse(request: request))
-    }
+//struct DogProvider: SessionProvider {
+//    func data(for request: URLRequest) async throws -> (Data, URLResponse) {
+//        let indy = Dog(name: "Indy", age: 3, breed: "Golden")
+//        let data = (try? JSONEncoder().encode(indy)) ?? Data()
+//        return (data, urlResponse(request: request))
+//    }
+//
+//    func upload(for request: URLRequest, from: Data) async throws -> (Data, URLResponse) {
+//        throw APIError.unknown
+//    }
+//
+//    func urlResponse(request: URLRequest, statusCode: HTTPStatus = .success) -> URLResponse {
+//        HTTPURLResponse(url: request.url!,
+//                        statusCode: statusCode.statusCode,
+//                        httpVersion: nil,
+//                        headerFields: nil)! as URLResponse
+//    }
+//}
+//
+//struct DogAPI: API {
+//    var baseUrl: String = "dogs.test"
+//    var headers = [String:String]()
+//    var encoder = JSONEncoder()
+//    var decoder = JSONDecoder()
+//    var sessionProvider: SessionProvider = SeriesProvider(series: .multiple([
+//        .success(Dog(name: "Tazo", age: 10, breed: "Chocolate Lab")),
+//        .success(Dog(name: "Indy", age: 3, breed: "Golden"))
+//    ]))
+//}
 
-    func upload(for request: URLRequest, from: Data) async throws -> (Data, URLResponse) {
-        throw APIError.unknown
-    }
-
-    func urlResponse(request: URLRequest, statusCode: HTTPStatus = .success) -> URLResponse {
-        HTTPURLResponse(url: request.url!,
-                        statusCode: statusCode.statusCode,
-                        httpVersion: nil,
-                        headerFields: nil)! as URLResponse
-    }
-}
-
-struct DogAPI: API {
-    var baseUrl: String = "dogs.test"
-    var headers = [String:String]()
-    var encoder = JSONEncoder()
-    var decoder = JSONDecoder()
-    var sessionProvider: SessionProvider = SeriesProvider(series: .multiple([
-        .success(Dog(name: "Tazo", age: 10, breed: "Chocolate Lab")),
-        .success(Dog(name: "Indy", age: 3, breed: "Golden"))
-    ]))
-}
-
-struct Dog: Codable {
-    let name: String
-    let age: Int
-    let breed: String
-}
-
-public protocol Responsable {
-    associatedtype Response: Decodable
-}
-
-extension Dog: Responsable {
-    typealias Response = Dog
-}
-
-struct DogRequest: APIRequest {
-    typealias Body = EmptyBody
-    var body: EmptyBody?
-    var httpMethod: HTTPMethod = .GET
-    var path: String = "/dog"
-    typealias Response = Dog
-}
+//struct Dog: Codable {
+//    let name: String
+//    let age: Int
+//    let breed: String
+//}
+//
+//public protocol Responsable {
+//    associatedtype Response: Decodable
+//}
+//
+//extension Dog: Responsable {
+//    typealias Response = Dog
+//}
+//
+//struct DogRequest: APIRequest {
+//    typealias Body = EmptyBody
+//    var body: EmptyBody?
+//    var httpMethod: HTTPMethod = .GET
+//    var path: String = "/dog"
+//    typealias Response = Dog
+//}
 
 //@propertyWrapper struct Response<T: APIRequest> {
 //    private var request: any APIRequest
@@ -190,8 +190,8 @@ public class Resty<U: API, T: APIRequest>: DynamicProperty {
 
 struct DogView: View {
 
-    @Resty(DogAPI(), DogRequest())
-    var doggy: Dog?
+//    @Resty(DogAPI(), DogRequest())
+//    var doggy: Dog?
 
 //    @StateObject var dog = Resty(DogAPI(), DogRequest())
 //    @Resty(DogAPI(), DogRequest())

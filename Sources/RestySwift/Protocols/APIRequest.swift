@@ -26,3 +26,21 @@ public extension APIRequest {
     var parameters: [String: QueryParameter]? { nil }
     var headers: [String: String]? { nil }
 }
+
+public protocol BindingRequest: APIRequest {
+    var api: API { get }
+}
+
+
+
+
+public typealias PagableObject = Codable & Identifiable
+
+public protocol PagedBindingRequest: BindingRequest where Response: Collection, Response.Element: PagableObject {
+    var pageSize: Int { get }
+    var startPage: Int { get }
+}
+
+extension PagedBindingRequest {
+    var startPage: Int { 1 }
+}
