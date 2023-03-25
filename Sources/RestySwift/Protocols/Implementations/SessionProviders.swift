@@ -74,7 +74,7 @@ public enum Series {
     case multiple([SessionResult])
 }
 
-public class SeriesProvider {
+public actor SeriesProvider {
 
     // Likely need support custom encoder and decoders
     private let encoder = JSONEncoder()

@@ -28,9 +28,9 @@ final class TestingGrounds: XCTestCase {
 
     func testPerformanceExample() throws {
         // This is an example of a performance test case.
-        let component = PathComponent(nil) + PathComponent("Dog") + PathComponent("1") + PathComponent("edit")
-        component.$path
-        print(component.path)
+//        let component = PathComponent(nil) + PathComponent("Dog") + PathComponent("1") + PathComponent("edit")
+//        component.$path
+//        print(component.path)
     }
 
 //    @Resty(DogAPI(), DogRequest())

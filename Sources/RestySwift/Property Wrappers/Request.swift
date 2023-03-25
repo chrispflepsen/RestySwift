@@ -24,22 +24,20 @@ public class Core<T: BindingRequest>: NSObject, ObservableObject {
         Task {
             do {
                 let result = try await request.api.perform(request: request)
-                DispatchQueue.main.async {
-                    self.updateResult(result)
-                }
+                await self.updateResult(result)
             } catch let error {
-                DispatchQueue.main.async {
-                    self.updateError(error)
-                }
+                await self.updateError(error)
             }
         }
     }
 
+    @MainActor
     private func updateResult(_ result: T.Response?) {
         self.result = result
         self.error = nil
     }
 
+    @MainActor
     private func updateError(_ error: Error) {
         self.result = result
         self.error = nil

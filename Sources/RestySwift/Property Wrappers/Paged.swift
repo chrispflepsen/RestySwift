@@ -30,16 +30,26 @@ final public class PagingCore<T: PagedBindingRequest>: NSObject, ObservableObjec
         Task {
             do {
                 let result = try await request.api.perform(request: request)
-                self.result.append(contentsOf: result)
-                if result.count != request.pageSize {
-                    isLastPage = true
-                } else {
-                    currentPage += 1
-                }
+                await appendResult(result)
             } catch let error {
-                self.error = error
+                await updateError(error)
             }
         }
+    }
+
+    @MainActor
+    private func appendResult(_ result: T.Response) {
+        self.result.append(contentsOf: result)
+        if result.count != request.pageSize {
+            isLastPage = true
+        } else {
+            currentPage += 1
+        }
+    }
+
+    @MainActor
+    private func updateError(_ error: Error) {
+        self.error = error
     }
 }
 
