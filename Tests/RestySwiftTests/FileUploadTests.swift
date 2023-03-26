@@ -10,19 +10,18 @@ import XCTest
 
 final class FileUploadTests: XCTestCase {
 
-    let api = TestApi()
     let authProvider = MockAuthProvider()
     let versionProvider = MockVersionProvider()
-    let sessionProvider = MockSessionProvider()
-    var client: API!
+    var api: CustomAPI!
+    var sessionProvider: MockSessionProvider!
 
     let fileUpload = FileUpload(data: Data(count: 1024), fileName: "file.txt")
 
     override func setUpWithError() throws {
-        client = CustomAPI(cacheProvider: nil,
+        api = CustomAPI(cacheProvider: nil,
                            authProvider: authProvider,
-                           versionProvider: versionProvider,
-                           sessionProvider: sessionProvider)
+                           versionProvider: versionProvider)
+        sessionProvider = MockSessionProvider(api: api)
     }
 
     func testFileUploadCreation() throws {
@@ -34,23 +33,23 @@ final class FileUploadTests: XCTestCase {
     }
 
     func testFileUpload() async throws {
-        sessionProvider.results = [
-            .success(EmptyResponse())
-        ]
+        sessionProvider.connector = .single(.success(EmptyResponse()))
 
         let request = FileUploadRequest(path: "/upload", fileUpload: fileUpload)
-        try await client.performFileUpload(request)
+        try await api.performFileUpload(request,
+                                        sessionProvider: sessionProvider)
         XCTAssertEqual(sessionProvider.uploadForRequestCalled, 1)
     }
 
     func testFailure() async throws {
-        sessionProvider.results = [
+        sessionProvider.connector = .queue([
             .forbidden
-        ]
+        ])
 
         let request = FileUploadRequest(path: "/upload", fileUpload: fileUpload)
         let expectation = "Expect failure due to forbidden response"
-        await XCTAssertThrowsErrorAsync(try await client.performFileUpload(request),
+        await XCTAssertThrowsErrorAsync(try await api.performFileUpload(request,
+                                                                        sessionProvider: sessionProvider),
                                         expectation) { error in
             switch error {
             case APIError.invalidHTTPStatus(let status):
@@ -62,14 +61,15 @@ final class FileUploadTests: XCTestCase {
     }
 
     func testFailingAuth() async throws {
-        sessionProvider.results = [
+        sessionProvider.connector = .queue([
             .unauthorized,
             .unauthorized
-        ]
+        ])
 
         let request = FileUploadRequest(path: "/upload", fileUpload: fileUpload)
         let expectation = "Expect failure due to failing re auth"
-        await XCTAssertThrowsErrorAsync(try await client.performFileUpload(request),
+        await XCTAssertThrowsErrorAsync(try await api.performFileUpload(request,
+                                                                        sessionProvider: sessionProvider),
                                   expectation) { error in
             switch error {
             case APIError.invalidHTTPStatus(let status):
@@ -83,13 +83,14 @@ final class FileUploadTests: XCTestCase {
     }
 
     func testRefreshAuthentication() async throws {
-        sessionProvider.results = [
+        sessionProvider.connector = .queue([
             .unauthorized,
             .noContent
-        ]
+        ])
 
         let request = FileUploadRequest(path: "/upload", fileUpload: fileUpload)
-        try await client.performFileUpload(request)
+        try await api.performFileUpload(request,
+                                        sessionProvider: sessionProvider)
         XCTAssertEqual(authProvider.refreshTokenCalled, 1)
         XCTAssertEqual(authProvider.injectCredentialsCalled, 2)
     }

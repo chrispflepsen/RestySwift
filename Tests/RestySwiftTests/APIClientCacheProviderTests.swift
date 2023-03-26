@@ -10,38 +10,35 @@ import XCTest
 
 final class APIClientCacheProviderTests: XCTestCase {
 
-    let api = TestApi()
     let versionProvider = MockVersionProvider()
-    let sessionProvider = MockSessionProvider()
     let cacheProvider = MockCacheProvider()
-    var client: API!
+    var api: API!
+    var sessionProvider: MockSessionProvider!
 
     override func setUp() async throws {
-        client = CustomAPI(cacheProvider: cacheProvider,
+        api = CustomAPI(cacheProvider: cacheProvider,
                            authProvider: nil,
-                           versionProvider: versionProvider,
-                           sessionProvider: sessionProvider)
+                           versionProvider: versionProvider)
+        sessionProvider = MockSessionProvider(api: api)
     }
 
     func testNoCache() async throws {
         let emptyCache = MockEmptyCacheProvider()
-        client.cacheProvider = emptyCache
-        sessionProvider.results = [
-            .success(Dog.list)
-        ]
+        api.cacheProvider = emptyCache
+        sessionProvider.connector = .single(.success(Dog.list))
 
-        let dog = try await client.perform(request: DogRequest())
+        let dog = try await api.perform(request: DogRequest(),
+                                        sessionProvider: sessionProvider)
         XCTAssertNotNil(dog)
         XCTAssert(emptyCache.readObjects == 1)
         XCTAssert(sessionProvider.dataForRequestCalled == 1)
     }
 
     func testReadFromCache() async throws {
-        sessionProvider.results = [
-            .success(Dog.list)
-        ]
+        sessionProvider.connector = .single(.success(Dog.list))
 
-        let dog = try await client.perform(request: DogRequest())
+        let dog = try await api.perform(request: DogRequest(),
+                                        sessionProvider: sessionProvider)
         XCTAssertNotNil(dog)
         XCTAssert(cacheProvider.readObjects == 1)
         XCTAssert(sessionProvider.dataForRequestCalled == 0)

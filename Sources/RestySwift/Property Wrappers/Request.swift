@@ -14,7 +14,8 @@ public class Core<T: BindingRequest>: NSObject, ObservableObject {
 
     private let request: T
 
-    init(request: T) {
+    init(request: T,
+         networkConnector: NetworkConnector = .shared) {
         self.request = request
         super.init()
         performRequest()

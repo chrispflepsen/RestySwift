@@ -23,7 +23,6 @@ final public class PagingCore<T: PagedBindingRequest>: NSObject, ObservableObjec
         nextPage()
     }
 
-    // TODO: Update RestySwift to add support for a paging request. we need the compiler to know that T.Response is an `Array` otherwise we can't merge the results
     public func nextPage() {
         // Maybe need to trigger some feedback that we are still at the end.
         guard !isLastPage else { return }

@@ -12,6 +12,7 @@ public enum QueryParameter {
     case array([String])
 }
 
+// One Request
 public protocol APIRequest {
     associatedtype Body: Encodable
     associatedtype Response: Decodable
@@ -30,9 +31,6 @@ public extension APIRequest {
 public protocol BindingRequest: APIRequest {
     var api: API { get }
 }
-
-
-
 
 public typealias PagableObject = Codable & Identifiable
 

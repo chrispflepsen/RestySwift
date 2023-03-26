@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol SessionProvider {
+protocol SessionProvider {
     func data(for request: URLRequest) async throws -> (Data, URLResponse)
     func upload(for request: URLRequest, from: Data) async throws -> (Data, URLResponse)
 }
