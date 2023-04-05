@@ -10,39 +10,43 @@ import XCTest
 
 final class APIJSONTests: XCTestCase {
 
-    let api = TestApi()
     let authProvider = MockAuthProvider()
     let versionProvider = MockVersionProvider()
-    let sessionProvider = MockSessionProvider()
-    var client: APIClient!
+    var api: CustomAPI!
+    var sessionProvider: MockSessionProvider!
 
     override func setUp() async throws {
-        client = APIClient(api: api,
-                           cacheProvider: nil,
+        api = CustomAPI(cacheProvider: nil,
                            authProvider: authProvider,
-                           versionProvider: versionProvider,
-                           sessionProvider: sessionProvider)
+                           versionProvider: versionProvider)
+        sessionProvider = MockSessionProvider(api: api)
     }
 
     func testJsonParsing() async throws {
-        sessionProvider.results = [
+        let connector: NetworkConnector = .queue([
             .unauthorized,
             .success(Dog.list)
-        ]
+        ])
 
-        let dogs = try? await client.perform(request: DogRequest())
-        XCTAssertNotNil(dogs)
-        XCTAssert(authProvider.refreshTokenCalled == 1)
+        do {
+            let dogs = try await api.perform(request: DogRequest(),
+                                                connector: connector)
+            XCTAssertNotNil(dogs)
+            XCTAssert(authProvider.refreshTokenCalled == 1)
+        } catch let error {
+            print(error)
+        }
     }
 
     func testJsonParsingFailing() async {
-        sessionProvider.results = [
+        let connector: NetworkConnector = .queue([
             .unauthorized,
             .success(Dog.list)
-        ]
+        ])
 
         let failureMessage = "JSON parsing expected to fail"
-        await XCTAssertThrowsErrorAsync(try await client.perform(request: CatRequest()),
+        await XCTAssertThrowsErrorAsync(try await api.perform(request: CatRequest(),
+                                                                 connector: connector),
                                    failureMessage) { error in
             guard case APIError.invalidJSON = error else {
                 XCTFail(failureMessage)

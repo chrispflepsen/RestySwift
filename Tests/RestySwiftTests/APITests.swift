@@ -3,32 +3,24 @@ import XCTest
 
 final class APITests: XCTestCase {
 
-    let api = TestApi()
     let authProvider = MockAuthProvider()
     let versionProvider = MockVersionProvider()
-    let sessionProvider = MockSessionProvider()
-    var client: APIClient!
+    var api: API!
+    var sessionProvider: MockSessionProvider!
 
     override func setUp() async throws {
-        client = APIClient(api: api,
-                           cacheProvider: nil,
+        api = CustomAPI(cacheProvider: nil,
                            authProvider: authProvider,
-                           versionProvider: versionProvider,
-                           sessionProvider: sessionProvider)
-    }
-
-    func testPublicClientCreation() throws {
-        let client = APIClient(api: api)
-        XCTAssertNotNil(client.api)
+                           versionProvider: versionProvider)
+        sessionProvider = MockSessionProvider(api: api)
     }
 
     func testOtherCode() async throws {
-        sessionProvider.results = [
-            .forbidden
-        ]
+        let connector: NetworkConnector = .single(.forbidden)
 
         let expectation = "Expect statusCode error to be thrown"
-        await XCTAssertThrowsErrorAsync(try await client.perform(request: DogRequest()),
+        await XCTAssertThrowsErrorAsync(try await api.perform(request: DogRequest(),
+                                                                 connector: connector),
                                   expectation) { error in
             switch error {
             case APIError.invalidHTTPStatus(let status):
