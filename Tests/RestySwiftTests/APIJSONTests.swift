@@ -30,7 +30,7 @@ final class APIJSONTests: XCTestCase {
 
         do {
             let dogs = try await api.perform(request: DogRequest(),
-                                                networkConnector: connector)
+                                                connector: connector)
             XCTAssertNotNil(dogs)
             XCTAssert(authProvider.refreshTokenCalled == 1)
         } catch let error {
@@ -46,7 +46,7 @@ final class APIJSONTests: XCTestCase {
 
         let failureMessage = "JSON parsing expected to fail"
         await XCTAssertThrowsErrorAsync(try await api.perform(request: CatRequest(),
-                                                                 networkConnector: connector),
+                                                                 connector: connector),
                                    failureMessage) { error in
             guard case APIError.invalidJSON = error else {
                 XCTFail(failureMessage)

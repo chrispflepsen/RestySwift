@@ -64,7 +64,7 @@ final class APIClientAuthProviderTests: XCTestCase {
 
         let expectation = "Expect unauthorized error"
         await XCTAssertThrowsErrorAsync(try await api.perform(request: DogRequest(),
-                                                                 networkConnector: connector),
+                                                                 connector: connector),
                                         expectation) { error in
             switch error {
             case APIError.invalidHTTPStatus(let status):

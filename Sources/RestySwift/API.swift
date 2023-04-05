@@ -7,10 +7,6 @@
 
 import Foundation
 
-struct Moped {
-    let name: String
-}
-
 // All requests
 public protocol API {
     var baseUrl: String { get }

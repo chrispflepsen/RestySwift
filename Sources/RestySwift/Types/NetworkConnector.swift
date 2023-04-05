@@ -20,10 +20,6 @@ public enum SessionResult {
     case error(Error)
 }
 
-protocol SessionProviderWrapper {
-//    buildWrapper(sessionProvider: )
-}
-
 public enum NetworkConnector {
     case shared
     case urlSession(URLSession)

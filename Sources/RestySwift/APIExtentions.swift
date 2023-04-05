@@ -1,5 +1,5 @@
 //
-//  APIClient.swift
+//  APIExtentions.swift
 //  API
 //
 //  Created by Chris Pflepsen on 11/1/22.
@@ -13,15 +13,15 @@ public extension API {
 
     @discardableResult
     func perform<T: APIRequest>(request: T,
-                                networkConnector: NetworkConnector = .shared) async throws -> T.Response {
+                                connector: NetworkConnector = .shared) async throws -> T.Response {
         return try await perform(request: request,
-                                 sessionProvider: networkConnector.sessionProvider(forApi: self))
+                                 sessionProvider: connector.sessionProvider(forApi: self))
     }
 
     func performFileUpload(_ fileUpload: FileUploadRequest,
-                           networkConnector: NetworkConnector = .shared) async throws {
+                           connector: NetworkConnector = .shared) async throws {
         return try await performFileUpload(fileUpload,
-                                           sessionProvider: networkConnector.sessionProvider(forApi: self))
+                                           sessionProvider: connector.sessionProvider(forApi: self))
     }
 
     // MARK: - Request

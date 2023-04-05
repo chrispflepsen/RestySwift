@@ -20,7 +20,7 @@ final class APITests: XCTestCase {
 
         let expectation = "Expect statusCode error to be thrown"
         await XCTAssertThrowsErrorAsync(try await api.perform(request: DogRequest(),
-                                                                 networkConnector: connector),
+                                                                 connector: connector),
                                   expectation) { error in
             switch error {
             case APIError.invalidHTTPStatus(let status):
