@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public class RequestViewModel<T: BindingRequest>: ObservableObject {
+public class RequestObservable<T: BindingRequest>: ObservableObject {
     @Published public var result: T.Response?
     @Published public var error: Error?
 
@@ -44,16 +44,16 @@ public class RequestViewModel<T: BindingRequest>: ObservableObject {
 }
 @propertyWrapper
 public struct Request<T: BindingRequest>: DynamicProperty {
-    @ObservedObject private var core: RequestViewModel<T>
+    @ObservedObject private var observable: RequestObservable<T>
 
     public var wrappedValue: T.Response? {
-        get { core.result }
-        nonmutating set { core.result = newValue }
+        get { observable.result }
+        nonmutating set { observable.result = newValue }
     }
 
-    public var projectedValue: RequestViewModel<T> { core }
+    public var projectedValue: RequestObservable<T> { observable }
 
     public init(_ request: T, _ networkConnector: NetworkConnector = .shared) {
-        self.core = RequestViewModel(request: request, networkConnector: networkConnector)
+        self.observable = RequestObservable(request: request, networkConnector: networkConnector)
     }
 }
