@@ -11,6 +11,6 @@ public enum APIError: Error {
     case unableToBuildRequest
     case invalidHTTPStatus(HTTPStatus)
     case invalidJSON(DecodingError)
-    case unsuported
+    case unsupported
     case unknown
 }
