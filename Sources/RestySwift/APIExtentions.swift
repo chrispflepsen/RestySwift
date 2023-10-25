@@ -81,9 +81,7 @@ public extension API {
     internal func performFileUpload(_ fileUpload: FileUploadRequest,
                                    sessionProvider: SessionProvider,
                                     attemptStatus: AttemptStatus = .initial) async throws {
-        guard let fileData = fileUpload.body?.bodyData else {
-            throw APIError.unableToBuildRequest
-        }
+        let fileData = fileUpload.body.bodyData
         let urlRequest = try URLRequest(request: fileUpload,
                                         api: self,
                                         versionProvider: versionProvider,

@@ -13,18 +13,20 @@ public enum QueryParameter {
 }
 
 public protocol APIRequest {
-    associatedtype Body: Encodable
+    associatedtype Body: Encodable = EmptyBody
     associatedtype Response: Decodable
     var httpMethod: HTTPMethod { get }
     var path: String { get }
     var parameters: [String: QueryParameter]? { get }
     var headers: [String: String]? { get }
-    var body: Body? { get }
+    var body: Body { get }
 }
 
 public extension APIRequest {
+    var httpMethod: HTTPMethod { .GET }
     var parameters: [String: QueryParameter]? { nil }
     var headers: [String: String]? { nil }
+    var body: EmptyBody? { nil }
 }
 
 public protocol BindingRequest: APIRequest {

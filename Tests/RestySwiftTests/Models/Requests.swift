@@ -22,11 +22,9 @@ struct Dog: Codable {
 }
 
 struct DogRequest: APIRequest {
-    typealias Body = EmptyBody
     typealias Response = [Dog]
     var httpMethod: HTTPMethod { .GET }
     var path: String { "/dog" }
-    var body: EmptyBody? { nil }
 }
 
 struct Cat: Codable {
@@ -36,9 +34,7 @@ struct Cat: Codable {
 }
 
 struct CatRequest: APIRequest {
-    typealias Body = EmptyBody
     typealias Response = [Cat]
     var httpMethod: HTTPMethod { .GET }
     var path: String { "/cat" }
-    var body: EmptyBody? { nil }
 }

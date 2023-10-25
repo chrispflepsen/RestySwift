@@ -10,7 +10,7 @@ import Foundation
 public struct FileUploadRequest {
     public var httpMethod: HTTPMethod = .POST
     public var path: String
-    public var body: FileUpload?
+    public var body: FileUpload
     public var headers: [String : String]?
 
     public init(path: String, fileUpload: FileUpload) {
