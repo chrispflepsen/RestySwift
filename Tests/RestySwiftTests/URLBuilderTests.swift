@@ -21,7 +21,7 @@ final class URLBuilderTests: XCTestCase {
     }
 
     func testBuildBasic() async throws {
-        let url = try URLBuilder.build("https://example.test", path: "/dogs", parameters: nil)
+        let url = try URLBuilder.build("https://example.test/api", path: "/dogs", parameters: nil)
         XCTAssert(!url.absoluteString.isEmpty)
     }
 

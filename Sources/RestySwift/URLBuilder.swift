@@ -9,15 +9,18 @@ import Foundation
 
 enum URLBuilder {
     static func build(_ host: String, path: String? = nil, parameters: [String: QueryParameter]? = nil) throws -> URL {
-        guard let baseUrl = URL(string: host) else { throw APIError.unableToBuildRequest }
-        var components = URLComponents(url: baseUrl, resolvingAgainstBaseURL: false)
+        guard let baseUrl = URL(string: host),
+              var components = URLComponents(url: baseUrl, resolvingAgainstBaseURL: false) else {
+            throw APIError.unableToBuildRequest
+        }
+
         if let path = path {
-            components?.path = path
+            components.path = components.path + path
         }
         if let parameters = parameters {
-            components?.queryItems = buildQueryItem(parameters)
+            components.queryItems = buildQueryItem(parameters)
         }
-        guard let url = components?.url else { throw APIError.unableToBuildRequest }
+        guard let url = components.url else { throw APIError.unableToBuildRequest }
         return url
     }
 
