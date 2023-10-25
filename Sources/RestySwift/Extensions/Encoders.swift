@@ -8,7 +8,7 @@
 import Foundation
 
 public extension JSONEncoder {
-    var snakeCase: JSONEncoder {
+    static var snakeCase: JSONEncoder {
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
         return encoder
@@ -16,9 +16,16 @@ public extension JSONEncoder {
 }
 
 public extension JSONDecoder {
-    var snakeCase: JSONDecoder {
+    static var snakeCase: JSONDecoder {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         return decoder
     }
+}
+
+struct MyApi: API {
+    var cacheProvider: CacheProvider?
+    
+    var baseUrl: String { "https://mysite.test" }
+    let encoder: JSONEncoder = .snakeCase
 }

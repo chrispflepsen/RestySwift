@@ -10,9 +10,8 @@ import Foundation
 extension URLRequest {
 
     init<T: APIRequest>(request: T,
-                        api: API,
-                        versionProvider: VersionProvider?,
-                        authProvider: AuthenticationProvider?) throws {
+                        body: T.Response?,
+                        api: API) throws {
         
         let pathComponent = PathComponent(versionProvider?.versionString(forRequest: request)) + PathComponent(request.path)
 
