@@ -1,13 +1,13 @@
 //
 //  Encoders.swift
-//  
+//
 //
 //  Created by Chris Pflepsen on 10/25/23.
 //
 
 import Foundation
 
-extension JSONEncoder {
+public extension JSONEncoder {
     var snakeCase: JSONEncoder {
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
@@ -15,7 +15,7 @@ extension JSONEncoder {
     }
 }
 
-extension JSONDecoder {
+public extension JSONDecoder {
     var snakeCase: JSONDecoder {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
