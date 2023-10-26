@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// HTTP status code
 public enum HTTPStatus: CaseIterable {
 
     /// 100

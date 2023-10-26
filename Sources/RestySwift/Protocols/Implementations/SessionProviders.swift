@@ -8,8 +8,8 @@
 import Foundation
 
 enum Series {
-    case single(SessionResult)
-    case multiple([SessionResult])
+    case single(HTTPResponse)
+    case multiple([HTTPResponse])
 }
 
 class SeriesProvider {
@@ -43,7 +43,7 @@ class SeriesProvider {
         }
     }
 
-    private func response(api: API, request: URLRequest, result: SessionResult) throws -> (Data, URLResponse) {
+    private func response(api: API, request: URLRequest, result: HTTPResponse) throws -> (Data, URLResponse) {
         switch result {
         case .success(let encodable):
             let data = (try? api.encoder.encode(encodable)) ?? Data()

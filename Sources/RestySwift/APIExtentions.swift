@@ -16,7 +16,7 @@ extension API {
     /// - Parameters:
     ///   - request: The API request to be performed.
     ///   - connector: The network connector to be used for the request (default is shared).
-    /// - Returns: The response object of the request.
+    /// - Returns: The response object of the request, decoded from the JSON of the body of the response.
     /// - Throws: An error if the request or response processing fails.
     ///
     @discardableResult

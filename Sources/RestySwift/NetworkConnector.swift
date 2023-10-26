@@ -7,7 +7,8 @@
 
 import Foundation
 
-public enum SessionResult {
+/// Simple representation of a http response used with `NetworkConnector` to stub responses
+public enum HTTPResponse {
     /// 401
     case unauthorized
     /// 403
@@ -16,11 +17,11 @@ public enum SessionResult {
     case success(Encodable)
     /// 201
     case noContent
-    /// error
+    /// throws error, request will fail
     case error(Error)
 }
 
-/// The `NetworkConnector` enumeration acts as a layer of abstraction on top of the network.
+/// The `NetworkConnector` acts as a layer of abstraction on top of the network. Allowing any request to be stubbed at the networking level.
 ///
 /// - Cases:
 ///   - shared: Represents URLSession.shared (Default)
@@ -35,10 +36,10 @@ public enum NetworkConnector {
     case urlSession(URLSession)
 
     /// Single result response
-    case single(SessionResult)
+    case single(HTTPResponse)
 
     /// Queue of responses
-    case queue([SessionResult])
+    case queue([HTTPResponse])
 
     internal var dataProvider: APIDataProvider {
         switch self {

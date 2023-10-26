@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// HTTP query parameters representation `[String: QueryParameter]`
 public typealias Parameters = [String: QueryParameter]
 
 extension Parameters {

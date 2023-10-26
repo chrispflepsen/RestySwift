@@ -10,7 +10,6 @@ import Foundation
 /// The `API` protocol defines the structure of an API in the RestySwift package. Defining everything needed to connect to the REST API.
 ///
 /// An `API` must specify the baseUrl
-/// Optional values: encoder, decoder, middlewares, and defaults.
 ///
 /// - Properties:
 ///   - baseUrl: The base URL for the API.
@@ -35,12 +34,12 @@ public protocol API {
     var middlewares: [Middleware]? { get }
 
     /// An optional set of default settings for the API.
-    var defaults: Defaults? { get }
+    var defaults: RequestDefaults? { get }
 }
 
 public extension API {
     var encoder: JSONEncoder { JSONEncoder() }
     var decoder: JSONDecoder { JSONDecoder() }
     var middlewares: [Middleware]? { nil }
-    var defaults: Defaults? { nil }
+    var defaults: RequestDefaults? { nil }
 }

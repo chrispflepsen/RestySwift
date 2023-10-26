@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Representation of a single field in a url query
 public enum QueryParameter {
     case single(String)
     case array([String])

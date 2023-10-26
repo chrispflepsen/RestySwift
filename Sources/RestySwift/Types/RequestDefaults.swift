@@ -7,8 +7,8 @@
 
 import Foundation
 
-/// Default values that will be applied to all requests performed against the API
-public protocol Defaults {
+/// Default values (parameters and headers) that will be applied to all requests performed on the API
+public protocol RequestDefaults {
     var parameters: Parameters? { get }
     var headers: Headers? { get }
 }

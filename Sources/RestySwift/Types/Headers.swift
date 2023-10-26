@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// HTTP Header representation
+/// HTTP header representation `[String: String]`
 public typealias Headers = [String: String]
 
 extension Headers {
