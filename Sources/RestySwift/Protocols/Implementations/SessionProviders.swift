@@ -78,7 +78,4 @@ extension SeriesProvider: APIDataProvider {
         return try nextResponse(api: api, request: request)
     }
 
-     public func upload(api: API, request: URLRequest, from: Data) async throws -> (Data, URLResponse) {
-        return try nextResponse(api: api, request: request)
-    }
 }

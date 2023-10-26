@@ -10,6 +10,8 @@ import Foundation
 public typealias Parameters = [String: QueryParameter]
 
 extension Parameters {
+
+    /// init `Parameters` object merging the default and request parameters, priority going to the request parameters
     init(defaultParameters: Parameters?,
          requestParameters: Parameters?) {
         var parameters = defaultParameters ?? [:]

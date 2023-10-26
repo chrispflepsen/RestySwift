@@ -3,8 +3,6 @@ import XCTest
 
 final class APITests: XCTestCase {
 
-    let authProvider = MockAuthProvider()
-    let versionProvider = MockVersionProvider()
     var api = TestAPI()
     var sessionProvider: MockDataProvider!
 

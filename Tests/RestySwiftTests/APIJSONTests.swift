@@ -10,10 +10,8 @@ import XCTest
 
 final class APIJSONTests: XCTestCase {
 
-    let authProvider = MockAuthProvider()
-    let versionProvider = MockVersionProvider()
     var api = TestAPI()
-    var sessionProvider: MockDataProvider!
+    var sessionProvider: APIDataProvider!
 
     override func setUp() async throws {
         sessionProvider = MockDataProvider(api: api)

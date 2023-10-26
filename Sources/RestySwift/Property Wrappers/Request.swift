@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+public protocol BindingRequest: APIRequest {
+    var api: API { get }
+}
+
 public class RequestObservable<T: BindingRequest>: ObservableObject {
     @Published public var result: T.Response?
     @Published public var error: Error?

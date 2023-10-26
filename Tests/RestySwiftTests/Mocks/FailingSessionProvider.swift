@@ -20,9 +20,6 @@ class FailingDataProvider: APIDataProvider {
         throw error
     }
 
-    func upload(api: RestySwift.API, request: URLRequest, from: Data) async throws -> (Data, URLResponse) {
-        throw error
-    }
 }
 
 extension APIDataProvider {
