@@ -14,4 +14,18 @@ extension URLResponse {
         }
         return HTTPStatus(statusCode: httpResponse.statusCode)
     }
+
+    var headers: Headers {
+        var headers = [String: String]()
+        guard let httpResponse = self as? HTTPURLResponse else {
+            return headers
+        }
+        httpResponse.allHeaderFields.forEach { (key, value) in
+            if let key = key as? String,
+                let value = value as? String {
+                headers[key] = value
+            }
+        }
+        return headers
+    }
 }

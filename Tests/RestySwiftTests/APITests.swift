@@ -5,14 +5,11 @@ final class APITests: XCTestCase {
 
     let authProvider = MockAuthProvider()
     let versionProvider = MockVersionProvider()
-    var api: API!
-    var sessionProvider: MockSessionProvider!
+    var api = TestAPI()
+    var sessionProvider: MockDataProvider!
 
     override func setUp() async throws {
-        api = CustomAPI(cacheProvider: nil,
-                           authProvider: authProvider,
-                           versionProvider: versionProvider)
-        sessionProvider = MockSessionProvider(api: api)
+        sessionProvider = MockDataProvider(api: api)
     }
 
     func testOtherCode() async throws {
@@ -23,8 +20,8 @@ final class APITests: XCTestCase {
                                                                  connector: connector),
                                   expectation) { error in
             switch error {
-            case APIError.invalidHTTPStatus(let status):
-                XCTAssertEqual(status, .forbidden)
+            case APIError.invalidHTTPStatus(let response):
+                XCTAssertEqual(response.statusCode, .forbidden)
             default:
                 XCTFail(expectation)
             }

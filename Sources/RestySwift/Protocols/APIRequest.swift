@@ -17,15 +17,15 @@ public protocol APIRequest {
     associatedtype Response: Decodable
     var httpMethod: HTTPMethod { get }
     var path: String { get }
-    var parameters: [String: QueryParameter]? { get }
-    var headers: [String: String]? { get }
+    var parameters: Parameters? { get }
+    var headers: Headers? { get }
     var body: Body { get }
 }
 
 public extension APIRequest {
     var httpMethod: HTTPMethod { .GET }
-    var parameters: [String: QueryParameter]? { nil }
-    var headers: [String: String]? { nil }
+    var parameters: Parameters? { nil }
+    var headers: Headers? { nil }
     var body: EmptyBody? { nil }
 }
 

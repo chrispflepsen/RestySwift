@@ -21,25 +21,22 @@ public enum SessionResult {
 }
 
 public enum NetworkConnector {
+    /// URLSession
     case shared
     case urlSession(URLSession)
     case single(SessionResult)
     case queue([SessionResult])
 
-    internal func sessionProvider(forApi api: API) -> SessionProvider {
+    internal var dataProvider: APIDataProvider {
         switch self {
         case .shared:
-            return Self.urlSession(.shared).sessionProvider(forApi: api)
+            return URLSession.shared
         case .urlSession(let urlSession):
             return urlSession
         case .single(let sessionResult):
-            return SeriesProvider(series: .single(sessionResult),
-                                  encoder: api.encoder,
-                                  decoder: api.decoder)
+            return SeriesProvider(series: .single(sessionResult))
         case .queue(let array):
-            return SeriesProvider(series: .multiple(array),
-                                  encoder: api.encoder,
-                                  decoder: api.decoder)
+            return SeriesProvider(series: .multiple(array))
         }
     }
 }

@@ -9,7 +9,7 @@ import Foundation
 
 public enum APIError: Error {
     case unableToBuildRequest
-    case invalidHTTPStatus(HTTPStatus)
+    case invalidHTTPStatus(APIResponse)
     case invalidJSON(DecodingError)
     case unsupported
     case unknown

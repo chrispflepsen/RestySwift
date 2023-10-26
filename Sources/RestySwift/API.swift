@@ -10,14 +10,19 @@ import Foundation
 // All requests
 public protocol API {
     var baseUrl: String { get }
-    var headers: [String: String] { get }
+
+    // Optional
     var encoder: JSONEncoder { get }
     var decoder: JSONDecoder { get }
-    var middleware: [Middleware] { get }
+    var middlewares: [Middleware]? { get }
+    var defaults: Defaults? { get }
+    var options: Options { get }
 }
 
 public extension API {
-    var headers: [String: String] { [String: String]() }
     var encoder: JSONEncoder { JSONEncoder() }
     var decoder: JSONDecoder { JSONDecoder() }
+    var middlewares: [Middleware]? { nil }
+    var defaults: Defaults? { nil }
+    var options: Options { Options() }
 }

@@ -8,8 +8,8 @@
 import Foundation
 
 enum URLBuilder {
-    static func build(_ host: String, path: String? = nil, parameters: [String: QueryParameter]? = nil) throws -> URL {
-        guard let baseUrl = URL(string: host),
+    static func build(_ baseUrlString: String, path: String? = nil, parameters: Parameters? = nil) throws -> URL {
+        guard let baseUrl = URL(string: baseUrlString),
               var components = URLComponents(url: baseUrl, resolvingAgainstBaseURL: false) else {
             throw APIError.unableToBuildRequest
         }
@@ -24,7 +24,7 @@ enum URLBuilder {
         return url
     }
 
-    private static func buildQueryItem(_ parameters: [String: QueryParameter]) -> [URLQueryItem] {
+    private static func buildQueryItem(_ parameters: Parameters) -> [URLQueryItem] {
         var items = [URLQueryItem]()
         for (key, value) in parameters {
             switch value {

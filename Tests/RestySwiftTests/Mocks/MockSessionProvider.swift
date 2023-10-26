@@ -13,13 +13,13 @@ enum TestingError: Error {
     case noSessionProviderConfigured
 }
 
-class MockSessionProvider {
-    private(set) var sessionProvider: SessionProvider?
+class MockDataProvider {
+    private(set) var dataProvider: APIDataProvider?
     var connector: NetworkConnector? {
         didSet {
             switch connector {
             case .single, .queue:
-                sessionProvider = connector?.sessionProvider(forApi: api)
+                dataProvider = connector?.dataProvider
             default:
                 break
             }
@@ -43,20 +43,21 @@ class MockSessionProvider {
     }
 }
 
-extension MockSessionProvider: SessionProvider {
-    func data(for request: URLRequest) async throws -> (Data, URLResponse) {
-        guard let sessionProvider = sessionProvider else {
+extension MockDataProvider: APIDataProvider {
+    func data(api: API, request: URLRequest) async throws -> (Data, URLResponse) {
+        guard let dataProvider = dataProvider else {
             throw TestingError.noSessionProviderConfigured
         }
         dataForRequestCalled += 1
-        return try await sessionProvider.data(for: request)
+        return try await dataProvider.data(api: api, request: request)
     }
 
-    func upload(for request: URLRequest, from: Data) async throws -> (Data, URLResponse) {
-        guard let sessionProvider = sessionProvider else {
+    func upload(api: API, request: URLRequest, from: Data) async throws -> (Data, URLResponse) {
+        guard let dataProvider = dataProvider else {
             throw TestingError.noSessionProviderConfigured
         }
         uploadForRequestCalled += 1
-        return try await sessionProvider.upload(for: request, from: from)
+        return try await dataProvider.upload(api: api, request: request, from: from)
     }
+
 }

@@ -14,9 +14,34 @@ public extension API {
     @discardableResult
     func perform<T: APIRequest>(request: T,
                                 connector: NetworkConnector = .shared) async throws -> T.Response {
-        return try await perform(request: request,
-                                 sessionProvider: connector.sessionProvider(forApi: self))
+
+        var next: @Sendable (T) async throws -> APIResponse = { (_request) in
+            return try await perform(request: _request,
+                                     dataProvider: connector.dataProvider)
+        }
+
+        middlewares?.reversed().forEach { middleware in
+            let temp = next
+            next = {
+                try await middleware.intercept($0, next: temp)
+            }
+        }
+        
+        let response = try await next(request)
+
+        guard case .success = response.statusCode else {
+            throw APIError.invalidHTTPStatus(response)
+        }
+
+        return try decodeJson(type: T.Response.self, data: response.data)
     }
+
+//    @discardableResult
+//    func perform<T: APIRequest>(request: T,
+//                                connector: NetworkConnector = .shared) async throws -> (Data, URLResponse) {
+//        return try await perform(request: request,
+//                                 sessionProvider: connector.sessionProvider(forApi: self))
+//    }
 
 //    func performFileUpload(_ fileUpload: FileUploadRequest,
 //                           connector: NetworkConnector = .shared) async throws {
@@ -27,20 +52,22 @@ public extension API {
     // MARK: - Request
 
     internal func perform<T: APIRequest>(request: T,
-                                         sessionProvider: SessionProvider) async throws -> T.Response {
-        
-        //Perform HTTP request
+                                         dataProvider: some APIDataProvider) async throws -> APIResponse {
+
+        let headers = Headers(defaultHeaders: defaults?.headers,
+                              requestHeaders: request.headers)
+
+        let parameters = Parameters(defaultParameters: defaults?.parameters,
+                                    requestParameters: request.parameters)
+
         let urlRequest = try URLRequest(request: request,
-                                        api: self,
-                                        versionProvider: versionProvider,
-                                        authProvider: authProvider)
+                                        baseUrl: baseUrl,
+                                        headers: headers,
+                                        parameters: parameters,
+                                        encoder: encoder)
 
-        // Inside middlewear loop
-        let (data, response) = try await sessionProvider.data(for: urlRequest)
-        let responseObject = try decodeJson(type: T.Response.self, data: data)
-
-
-        return responseObject
+        let (data, response) = try await dataProvider.data(api: self, request: urlRequest)
+        return APIResponse(data: data, response: response)
     }
 
     // MARK: - File Uploads

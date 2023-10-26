@@ -8,6 +8,10 @@
 import Foundation
 @testable import RestySwift
 
+struct TestAPI: API {
+    var baseUrl: String { "https://api.site.test"}
+}
+
 struct Dog: Codable {
     let name: String
     let breed: String

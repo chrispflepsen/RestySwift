@@ -14,9 +14,6 @@ enum Series {
 
 class SeriesProvider {
 
-    private var encoder: JSONEncoder!
-    private var decoder: JSONDecoder!
-
     private(set) var index: Int = 0
 
     var series: Series {
@@ -25,38 +22,34 @@ class SeriesProvider {
         }
     }
 
-    init(series: Series,
-         encoder: JSONEncoder,
-         decoder: JSONDecoder) {
+    init(series: Series) {
         self.series = series
-        self.encoder = encoder
-        self.decoder = decoder
     }
 
     func reset() {
         index = 0
     }
 
-    private func nextResponse(request: URLRequest) throws -> (Data, URLResponse) {
+    private func nextResponse(api: API, request: URLRequest) throws -> (Data, URLResponse) {
         switch series {
         case .multiple(let results):
             guard let result = results[safe: index] ?? results.last else {
                 throw APIError.unknown
             }
             index += 1
-            return try response(request: request, result: result)
+            return try response(api: api, request: request, result: result)
         case .single(let result):
-            return try response(request: request, result: result)
+            return try response(api: api, request: request, result: result)
         }
     }
 
-    private func response(request: URLRequest, result: SessionResult) throws -> (Data, URLResponse) {
+    private func response(api: API, request: URLRequest, result: SessionResult) throws -> (Data, URLResponse) {
         switch result {
         case .success(let encodable):
-            let data = (try? encoder.encode(encodable)) ?? Data()
+            let data = (try? api.encoder.encode(encodable)) ?? Data()
             return (data, urlResponse(request: request))
         case .noContent:
-            let data = (try? encoder.encode(EmptyResponse())) ?? Data()
+            let data = (try? api.encoder.encode(EmptyResponse())) ?? Data()
             return (data, urlResponse(request: request, statusCode: .noContent))
         case .unauthorized:
             return (Data(), urlResponse(request: request, statusCode: .unauthorized))
@@ -79,13 +72,13 @@ class SeriesProvider {
     }
 }
 
-extension SeriesProvider: SessionProvider {
+extension SeriesProvider: APIDataProvider {
 
-    public func data(for request: URLRequest) async throws -> (Data, URLResponse) {
-        return try nextResponse(request: request)
+     public func data(api: API, request: URLRequest) async throws -> (Data, URLResponse) {
+        return try nextResponse(api: api, request: request)
     }
 
-    public func upload(for request: URLRequest, from: Data) async throws -> (Data, URLResponse) {
-        return try nextResponse(request: request)
+     public func upload(api: API, request: URLRequest, from: Data) async throws -> (Data, URLResponse) {
+        return try nextResponse(api: api, request: request)
     }
 }
