@@ -1,6 +1,10 @@
 # RestySwift💤
 
-A protocol based barebones wrapper on top of URLSession for JSON based REST API(s) with support for authentication, authentication refresh, versioning, and local caching via protocols(left as an exercise to the reader of course)
+A barebones protocol based package built on top of URLSession for JSON based REST API(s) with support for request and response manipulation via client middleware.
+
+## Documentation
+
+The full RestySwift documentation is available here: [Documentation](https://chrispflepsen.github.io/RestySwift/)
 
 ## Basic Example
 
@@ -9,15 +13,12 @@ Define the API
 ```swift
 import RestySwift
 
-struct TestApi: API {
-    var baseUrl: String = "http://www.api.test"
-    var headers: [String : String] = [:]
-    var encoder: JSONEncoder = JSONEncoder()
-    var decoder: JSONDecoder = JSONDecoder()
+struct DogAPI: API {
+    var baseUrl: String { "https://www.dog.test" }
 }
 ```
 
-Define the data structure and request
+Define the response structure and request
 
 ```swift
 struct Dog: Codable {
@@ -27,21 +28,18 @@ struct Dog: Codable {
 }
 
 struct DogListRequest: APIRequest {
-    typealias Body = EmptyBody
     typealias Response = [Dog]
-    var httpMethod: HTTPMethod { .GET }
     var path: String { "/dog" }
-    var body: EmptyBody? { nil }
 }
 ```
 
 Perform the request
 
 ```swift
-let client = APIClient(api: api)
+let api = DogAPI()
 
 // the `dogs` object is of type [Dog] based on the `Response` typealias of the request
-let dogs = try await client.perform(request: DogListRequest())
+let dogs = try await api.perform(request: DogListRequest())
 ```
 
 All you need is an `API` and an `APIRequest` and you're done! You can go take a nap!
@@ -67,7 +65,7 @@ public protocol APIRequest {
 
 ## SwiftUI Bindings
 
-RestySwift also exposes SwiftUI bindings to bind your requests directly to the data model. After instantiation the request will automatically be performed in the background and the result of the request will be available via the `wrappedValue` of the request object. The data type of the request object is determined and enforced by the `BindingRequest.Response` type. Additionally errors and the ability to manually perform the request are exposed via the `projectedValue` of the Request. See example below.
+RestySwift also exposes SwiftUI bindings which are essentially self contained observable view models to bind your requests directly to the data model. After instantiation the request will automatically be performed in the background and the result of the request will be available via the `wrappedValue` of the request object. The data type of the request object is determined and enforced by the `BindingRequest.Response` type. Additionally errors and the ability to manually perform the request are exposed via the `projectedValue` of the Request. See example below.
 
 ### SwiftUI Example
 
@@ -103,18 +101,6 @@ struct DogView: View {
         }
     }
 }
-
-```
-
-Additionally you can easily stub any requests by passing in a `NetworkConnector` as the second parameter:
-
-```swift
-// `dog` will always be set to Porkchop
-@Request(DogRequest(), .single(.success(Dog(name: "Porkchop", age: 2)))) var dog: Dog?
-
-// Force the request to return an error
-@Request(DogRequest(), .single(.error(APIError.unknown))) var dog: Dog?
-```
 
 ## Installation
 

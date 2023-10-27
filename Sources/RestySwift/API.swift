@@ -22,7 +22,7 @@ public protocol API {
     /// The base URL for the API.
     var baseUrl: String { get }
 
-    // MARK:- Optional
+    // MARK: - Optional
 
     /// An optional JSON encoder used for encoding request parameters.
     var encoder: JSONEncoder { get }
