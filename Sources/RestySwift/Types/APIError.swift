@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Custom RestySwift Errors
 public enum APIError: Error {
     case unableToBuildRequest
     case invalidHTTPStatus(APIResponse)
