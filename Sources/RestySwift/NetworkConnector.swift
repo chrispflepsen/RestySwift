@@ -22,12 +22,6 @@ public enum HTTPResponse {
 }
 
 /// The `NetworkConnector` acts as a layer of abstraction on top of the network. Allowing any request to be stubbed at the networking level.
-///
-/// - Cases:
-///   - shared: Represents URLSession.shared (Default)
-///   - urlSession: Represents a custom URLSession to allow fine grain control
-///   - single: Represents a single response containing the provided data
-///   - queue: Represents a queue of response containing the provided data
 public enum NetworkConnector {
     /// URLSession.shared
     case shared

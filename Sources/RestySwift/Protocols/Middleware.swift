@@ -22,7 +22,7 @@ public protocol Middleware {
     ) async throws -> APIResponse
 }
 
-/// An object representing the response received from an API call.
+/// An object representing the response received from an API call used by middleware
 public struct APIResponse {
     /// URL of the request.
     let url: URL?
@@ -36,6 +36,7 @@ public struct APIResponse {
     /// The raw body data in the response
     let data: Data
 
+    /// initialize with the results from a URLSession request
     init(data: Data, response: URLResponse) {
         self.url = response.url
         self.statusCode = response.httpStatus
