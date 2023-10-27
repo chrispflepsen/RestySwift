@@ -47,19 +47,20 @@ All you need is an `API` and an `APIRequest` and you're done! You can go take a 
 ```swift
 public protocol API {
     var baseUrl: String { get }
-    var headers: [String: String] { get }
     var encoder: JSONEncoder { get }
     var decoder: JSONDecoder { get }
+    var middlewares: [Middleware]? { get }
+    var defaults: RequestDefaults? { get }
 }
 
 public protocol APIRequest {
-    associatedtype Body: Encodable
+    associatedtype Body: Encodable = EmptyBody
     associatedtype Response: Decodable
     var httpMethod: HTTPMethod { get }
     var path: String { get }
-    var parameters: [String: QueryParameter]? { get }
-    var headers: [String: String]? { get }
-    var body: Body? { get }
+    var parameters: Parameters? { get }
+    var headers: Headers? { get }
+    var body: Body { get }
 }
 ```
 
@@ -74,8 +75,8 @@ struct DogRequest: BindingRequest {
     var api: API { TestApi() }
     typealias Body = EmptyBody
     typealias Response = Dog
-    var httpMethod: HTTPMethod = .GET
-    var path: String = "/dog"
+    var httpMethod: HTTPMethod { .GET }
+    var path: String { "/dog" }
     var body: EmptyBody? { nil }
 }
 
@@ -101,6 +102,7 @@ struct DogView: View {
         }
     }
 }
+```
 
 ## Installation
 
