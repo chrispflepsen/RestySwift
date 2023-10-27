@@ -4,7 +4,7 @@ A barebones protocol based package built on top of URLSession for JSON based RES
 
 ## Documentation
 
-The full RestySwift documentation is available here: [Documentation](https://chrispflepsen.github.io/RestySwift/)
+The full RestySwift documentation is available here: [Documentation](https://chrispflepsen.github.io/RestySwift/documentation/restyswift/)
 
 ## Basic Example
 
