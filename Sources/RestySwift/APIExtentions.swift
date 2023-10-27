@@ -7,115 +7,62 @@
 
 import Foundation
 
-public extension API {
+extension API {
 
     // MARK: - Public Interface
 
+    /// Performs an asyncronous API request with the specified request.
+    ///
+    /// - Parameters:
+    ///   - request: The API request to be performed.
+    ///   - connector: The network connector to be used for the request (default is shared).
+    /// - Returns: The response object of the request, decoded from the JSON of the body of the response.
+    /// - Throws: An error if the request or response processing fails.
+    ///
     @discardableResult
-    func perform<T: APIRequest>(request: T,
-                                connector: NetworkConnector = .shared) async throws -> T.Response {
-        return try await perform(request: request,
-                                 sessionProvider: connector.sessionProvider(forApi: self))
-    }
+    public func perform<T: APIRequest>(request: T,
+                                       connector: NetworkConnector = .shared) async throws -> T.Response {
 
-    func performFileUpload(_ fileUpload: FileUploadRequest,
-                           connector: NetworkConnector = .shared) async throws {
-        return try await performFileUpload(fileUpload,
-                                           sessionProvider: connector.sessionProvider(forApi: self))
+        var next: @Sendable (T) async throws -> APIResponse = { (_request) in
+            return try await perform(request: _request,
+                                     dataProvider: connector.dataProvider)
+        }
+
+        middlewares?.reversed().forEach { middleware in
+            let temp = next
+            next = {
+                try await middleware.intercept($0, next: temp)
+            }
+        }
+        
+        let response = try await next(request)
+
+        guard response.statusCode.isSuccess else {
+            throw APIError.invalidHTTPStatus(response)
+        }
+
+        return try decodeJson(type: T.Response.self, data: response.data)
     }
 
     // MARK: - Request
 
-    internal func perform<T: APIRequest>(request: T,
-                                         sessionProvider: SessionProvider,
-                                         attemptStatus: AttemptStatus = .initial) async throws -> T.Response {
-        // Read from cache if available
-        let cachedObject = cacheProvider?.object(forRequest: request)
-        if let cachedObject = cachedObject {
-            return cachedObject
-        }
-        
-        //Perform HTTP request
+    func perform<T: APIRequest>(request: T,
+                                dataProvider: some APIDataProvider) async throws -> APIResponse {
+
+        let headers = Headers(defaultHeaders: defaults?.headers,
+                              requestHeaders: request.headers)
+
+        let parameters = Parameters(defaultParameters: defaults?.parameters,
+                                    requestParameters: request.parameters)
+
         let urlRequest = try URLRequest(request: request,
-                                        api: self,
-                                        versionProvider: versionProvider,
-                                        authProvider: authProvider)
+                                        baseUrl: baseUrl,
+                                        headers: headers,
+                                        parameters: parameters,
+                                        encoder: encoder)
 
-        let (data, response) = try await sessionProvider.data(for: urlRequest)
-        let httpStatus = response.httpStatus
-
-        guard httpStatus.isSuccess else {
-            return try await handleNonSuccessStatus(request: request,
-                                                    sessionProvider: sessionProvider,
-                                                    httpStatus: httpStatus,
-                                                    attemptStatus: attemptStatus)
-        }
-
-        let responseObject = try decodeJson(type: T.Response.self, data: data)
-        cacheProvider?.store(object: responseObject, for: request)
-        return responseObject
-    }
-
-    private func handleNonSuccessStatus<T: APIRequest>(request: T, sessionProvider: SessionProvider, httpStatus: HTTPStatus, attemptStatus: AttemptStatus) async throws -> T.Response {
-        guard attemptStatus == .initial,
-              httpStatus == .unauthorized,
-              let authProvider = authProvider,
-              authProvider.supportsRefresh else {
-            throw APIError.invalidHTTPStatus(httpStatus)
-        }
-        return try await performAuthenticationRefresh(request: request, sessionProvider: sessionProvider, provider: authProvider)
-    }
-
-    private func performAuthenticationRefresh<T: APIRequest>(request: T, sessionProvider: SessionProvider, provider: AuthenticationProvider) async throws -> T.Response {
-        let authResult = try await provider.refreshAuthentication()
-        switch authResult {
-        case .success:
-            return try await perform(request: request, sessionProvider: sessionProvider, attemptStatus: .retryUnauthorized)
-        case .failed:
-            throw APIError.invalidHTTPStatus(.unauthorized)
-        }
-    }
-
-    // MARK: - File Uploads
-
-    internal func performFileUpload(_ fileUpload: FileUploadRequest,
-                                   sessionProvider: SessionProvider,
-                                    attemptStatus: AttemptStatus = .initial) async throws {
-        let fileData = fileUpload.body.bodyData
-        let urlRequest = try URLRequest(request: fileUpload,
-                                        api: self,
-                                        versionProvider: versionProvider,
-                                        authProvider: authProvider)
-
-        let (_, response) = try await sessionProvider.upload(for: urlRequest, from: fileData)
-        let httpStatus = response.httpStatus
-
-        guard httpStatus.isSuccess else {
-            return try await handleFileUploadNonSuccessStatus(request: fileUpload,
-                                                              sessionProvider: sessionProvider,
-                                                              httpStatus: httpStatus,
-                                                              attemptStatus: attemptStatus)
-        }
-    }
-
-    private func handleFileUploadNonSuccessStatus(request: FileUploadRequest, sessionProvider: SessionProvider, httpStatus: HTTPStatus, attemptStatus: AttemptStatus) async throws {
-        guard attemptStatus == .initial,
-              httpStatus == .unauthorized,
-              let authProvider = authProvider else {
-            throw APIError.invalidHTTPStatus(httpStatus)
-        }
-
-        return try await performFileUploadAuthenticationRefresh(request: request, sessionProvider: sessionProvider, provider: authProvider)
-    }
-
-    private func performFileUploadAuthenticationRefresh(request: FileUploadRequest, sessionProvider: SessionProvider, provider: AuthenticationProvider) async throws {
-        let authResult = try await provider.refreshAuthentication()
-        switch authResult {
-        case .success:
-            return try await performFileUpload(request, sessionProvider: sessionProvider, attemptStatus: .retryUnauthorized)
-        case .failed:
-            throw APIError.invalidHTTPStatus(.unauthorized)
-        }
+        let (data, response) = try await dataProvider.data(api: self, request: urlRequest)
+        return APIResponse(data: data, response: response)
     }
 
     // MARK: - JSON

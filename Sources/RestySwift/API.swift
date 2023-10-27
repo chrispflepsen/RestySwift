@@ -7,34 +7,39 @@
 
 import Foundation
 
-// All requests
+/// The `API` protocol defines the structure of an API in the RestySwift package. Defining everything needed to connect to the REST API.
+///
+/// An `API` must specify the baseUrl
+///
+/// - Properties:
+///   - baseUrl: The base URL for the API.
+///   - encoder: An optional JSON encoder used for encoding request parameters. Defaults to `JSONEncoder()`.
+///   - decoder: An optional JSON decoder used for decoding response data. Defaults to `JSONDecoder()`.
+///   - middlewares: An optional array of middlewares that can be applied to the API requests. Defaults to `nil`.
+///   - defaults: An optional set of default settings and configurations for the API. Defaults to `nil`.
+///
 public protocol API {
+    /// The base URL for the API.
     var baseUrl: String { get }
-    var headers: [String: String] { get }
+
+    // MARK: - Optional
+
+    /// An optional JSON encoder used for encoding request parameters.
     var encoder: JSONEncoder { get }
+
+    /// An optional JSON decoder used for decoding response data.
     var decoder: JSONDecoder { get }
 
-    // Optional
-    var cacheProvider: CacheProvider? { get set }
-    var authProvider: AuthenticationProvider? { get set }
-    var versionProvider: VersionProvider? { get set }
+    /// An optional array of middlewares that can be applied to the API requests.
+    var middlewares: [Middleware]? { get }
+
+    /// An optional set of default settings for the API.
+    var defaults: RequestDefaults? { get }
 }
 
 public extension API {
-    var headers: [String: String] { [String: String]() }
     var encoder: JSONEncoder { JSONEncoder() }
     var decoder: JSONDecoder { JSONDecoder() }
-
-    var cacheProvider: CacheProvider? {
-        get { nil }
-        set { }
-    }
-    var authProvider: AuthenticationProvider? {
-        get { nil }
-        set { }
-    }
-    var versionProvider: VersionProvider? {
-        get { nil }
-        set { }
-    }
+    var middlewares: [Middleware]? { nil }
+    var defaults: RequestDefaults? { nil }
 }

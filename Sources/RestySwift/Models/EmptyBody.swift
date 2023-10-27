@@ -7,5 +7,8 @@
 
 import Foundation
 
+/// Empty JSON body object
 public struct EmptyBody: Codable { }
+
+/// Empty JSON response object
 public struct EmptyResponse: Codable { }

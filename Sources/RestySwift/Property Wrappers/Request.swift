@@ -7,6 +7,12 @@
 
 import SwiftUI
 
+/// Encapsulates the API to make the SwiftUI bindings possible
+public protocol BindingRequest: APIRequest {
+    var api: API { get }
+}
+
+/// Underlying view model for the SwiftUI bindings
 public class RequestObservable<T: BindingRequest>: ObservableObject {
     @Published public var result: T.Response?
     @Published public var error: Error?
@@ -42,6 +48,8 @@ public class RequestObservable<T: BindingRequest>: ObservableObject {
         self.error = nil
     }
 }
+
+/// Property wrapper that binds the request to the view model data
 @propertyWrapper
 public struct Request<T: BindingRequest>: DynamicProperty {
     @ObservedObject private var observable: RequestObservable<T>

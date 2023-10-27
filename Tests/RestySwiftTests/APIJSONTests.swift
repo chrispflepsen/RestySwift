@@ -10,16 +10,11 @@ import XCTest
 
 final class APIJSONTests: XCTestCase {
 
-    let authProvider = MockAuthProvider()
-    let versionProvider = MockVersionProvider()
-    var api: CustomAPI!
-    var sessionProvider: MockSessionProvider!
+    var api = TestAPI()
+    var sessionProvider: APIDataProvider!
 
     override func setUp() async throws {
-        api = CustomAPI(cacheProvider: nil,
-                           authProvider: authProvider,
-                           versionProvider: versionProvider)
-        sessionProvider = MockSessionProvider(api: api)
+        sessionProvider = MockDataProvider(api: api)
     }
 
     func testJsonParsing() async throws {
@@ -32,7 +27,6 @@ final class APIJSONTests: XCTestCase {
             let dogs = try await api.perform(request: DogRequest(),
                                                 connector: connector)
             XCTAssertNotNil(dogs)
-            XCTAssert(authProvider.refreshTokenCalled == 1)
         } catch let error {
             print(error)
         }
@@ -40,7 +34,6 @@ final class APIJSONTests: XCTestCase {
 
     func testJsonParsingFailing() async {
         let connector: NetworkConnector = .queue([
-            .unauthorized,
             .success(Dog.list)
         ])
 

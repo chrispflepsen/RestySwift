@@ -7,12 +7,14 @@
 
 import Foundation
 
+/// Enforces the `value` has a "/" character at index 0
 @propertyWrapper struct LeadingSlash {
     private var value: String? = nil
     var wrappedValue: String? {
         get { value }
         set {
-            guard let component = newValue else {
+            guard let component = newValue,
+                  !component.isEmpty else {
                 value = nil
                 return
             }
