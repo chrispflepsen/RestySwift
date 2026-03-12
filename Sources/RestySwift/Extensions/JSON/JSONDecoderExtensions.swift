@@ -8,7 +8,7 @@
 import Foundation
 
 public extension JSONDecoder {
-    /// An instance of JSONDecoder configured for decoding snake_case JSON keys to camelCase properties
+    /// An instance of JSONDecoder configured for decoding snake_case JSON keys to camelCase properties.
     static var snakeCase: JSONDecoder {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase

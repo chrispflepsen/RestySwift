@@ -1,61 +1,57 @@
 //
-//  MiddlewareTests.swift
-//  
+//  MiddlewareTest.swift
+//  RestySwift
 //
-//  Created by Chris Pflepsen on 10/25/23.
+//  Created by Chris Pflepsen on 3/12/26.
 //
 
-import XCTest
+import Foundation
+import Testing
+
 @testable import RestySwift
 
-struct DummyRequest: APIRequest {
-    typealias Response = EmptyResponse
-    var path: String { "/dummy"}
-}
-
-class TestOrderDelegate: OrderDelegate {
-
-    private(set) var requestOrder = [Int]()
-    private(set) var responseOrder = [Int]()
-
-
-    func requestRecieved(_ order: Int) {
-        requestOrder.append(order)
+struct PathAppendingMiddleware: Middleware {
+    func interceptRequest<T: Request>(_ request: MutableRequest<T>) async throws -> MutableRequest<T> {
+        request.path += "/list"
+        return request
     }
     
-    func responseRecieved(_ order: Int) {
-        responseOrder.append(order)
+    func interceptResponse(_ response: Response) async throws -> Response {
+        response
     }
 }
 
-struct ErrorMiddleware: Middleware {
-    let error: Error
-    func intercept<T>(_ request: T, next: (T) async throws -> APIResponse) async throws -> APIResponse {
-        throw error
+struct PathAppendingActiongMiddleware: Middleware {
+    func interceptRequest<T: Request>(_ request: MutableRequest<T>) async throws -> MutableRequest<T> {
+        request.path += "/action"
+        return request
+    }
+    
+    func interceptResponse(_ response: Response) async throws -> Response {
+        response
     }
 }
 
-final class MiddlewareTests: XCTestCase {
-
+class MiddlewareTest {
+    
     var api = RestyAPI()
 
-    func testMiddlewareOrder() async throws {
-        let delegate = TestOrderDelegate()
-        api.middlewares = (0..<10).map { OrderedMiddleware(order: $0,
-                                                           delegate: delegate) }
+    @Test func testModifyRequest() async throws {
+            do {
+                api.middleware = [
+                    PathAppendingMiddleware(),
+                    PathAppendingActiongMiddleware()
+                ]
+                
+                let mock = MockClient(client: .single(.success([Dog.indy])))
 
-        _ = try await api.perform(request: DummyRequest(),
-                                           connector: .single(.success(EmptyResponse())))
-        for i in 1..<delegate.requestOrder.count {
-            let currentElement = delegate.requestOrder[i]
-            let prevElement = delegate.requestOrder[i - 1]
-            XCTAssert(prevElement <= currentElement, "Middleware requests were not called in correct order")
-        }
-
-        for i in 1..<delegate.responseOrder.count {
-            let currentElement = delegate.responseOrder[i]
-            let prevElement = delegate.responseOrder[i - 1]
-            XCTAssert(prevElement >= currentElement, "Middleware responses were not called in correct order")
-        }
+                let result = try await api.perform(
+                    request: DogRequest(),
+                    client: .custom(mock)
+                )
+                #expect(result == [Dog.indy])
+                #expect(mock.requests.first?.url == URL(string: "http://site.test/dog/list/action")!)
+            } catch {}
     }
+
 }

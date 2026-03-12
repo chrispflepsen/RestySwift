@@ -8,7 +8,7 @@
 import Foundation
 
 public extension JSONEncoder {
-    /// An instance of JSONEncoder configured for encoding camelCase properties to snake_case JSON keys
+    /// An instance of JSONEncoder configured for encoding camelCase properties to snake_case JSON keys.
     static var snakeCase: JSONEncoder {
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase

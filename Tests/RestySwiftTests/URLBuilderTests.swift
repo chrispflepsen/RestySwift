@@ -8,7 +8,7 @@
 import XCTest
 @testable import RestySwift
 
-final class URLBuilderTests: XCTestCase {
+final class LegacyURLBuilderTests: XCTestCase {
 
     func testBuildFailure() async throws {
         let failureMessage = "Expect URL Build failure"
@@ -23,6 +23,11 @@ final class URLBuilderTests: XCTestCase {
     func testBuildBasic() async throws {
         let url = try URLBuilder.build("https://example.test/api", path: "/dogs", parameters: nil)
         XCTAssert(!url.absoluteString.isEmpty)
+    }
+    
+    func testBuildEmptyParameters() async throws {
+        let url = try URLBuilder.build("https://example.test/api", path: "/dogs", parameters: [:])
+        XCTAssertEqual(url.absoluteString, "https://example.test/api/dogs")
     }
 
     func testBuildHostOnly() async throws {
@@ -81,4 +86,16 @@ final class URLBuilderTests: XCTestCase {
         XCTAssertEqual(components.queryItems?.count, 4)
     }
 
+}
+
+import Testing
+
+struct URLBuilderTests {
+    
+    @Test func buildFailing() async throws {
+        do {
+            _ = try URLBuilder.build("")
+            Issue.record("Empty URL is expected to throw")
+        } catch {}
+    }
 }
