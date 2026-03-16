@@ -7,7 +7,10 @@
 
 import Foundation
 
+@testable import RestySwift
+
+/// A API implementation that can be used for testing.
 struct RestyAPI: API {
     var baseUrl: String = "http://site.test"
-    var middlewares: [Middleware]? = nil
+    var middleware: [Middleware]? = nil
 }

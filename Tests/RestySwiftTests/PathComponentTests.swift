@@ -5,34 +5,32 @@
 //  Created by Chris Pflepsen on 4/5/23.
 //
 
-import XCTest
+import Testing
 @testable import RestySwift
 
-final class PathComponentTests: XCTestCase {
-
-    func testInitSlash() throws {
+struct PathComponentTests {
+    @Test func initSlash() throws {
         let path = "/dog"
-        XCTAssert(PathComponent(path).path == path)
+        #expect(PathComponent(path).path == path)
     }
 
-    func testInitNoSlash() throws {
+    @Test func initNoSlash() throws {
         let path = "dog"
-        XCTAssert(PathComponent(path).path == "/\(path)")
+        #expect(PathComponent(path).path == "/\(path)")
     }
 
-    func testConcatLeadingNil() throws {
+    @Test func tconcatLeadingNil() throws {
         let pathComponent = PathComponent(nil) + PathComponent("dog")
-        XCTAssert(pathComponent.path == "/dog")
+        #expect(pathComponent.path == "/dog")
     }
 
-    func testConcatTrailingNil() throws {
+    @Test func concatTrailingNil() throws {
         let pathComponent = PathComponent("dog") + PathComponent(nil)
-        XCTAssert(pathComponent.path == "/dog")
+        #expect(pathComponent.path == "/dog")
     }
 
-    func testConcatMultiple() throws {
+    @Test func concatMultiple() throws {
         let component = PathComponent(nil) + PathComponent("Dog") + PathComponent(nil) + PathComponent("1") + PathComponent("edit")
-        XCTAssert(component.path == "/Dog/1/edit")
+        #expect(component.path == "/Dog/1/edit")
     }
-
 }

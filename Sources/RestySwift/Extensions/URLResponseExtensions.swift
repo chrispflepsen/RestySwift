@@ -8,6 +8,8 @@
 import Foundation
 
 extension URLResponse {
+    
+    /// The `HTTPStatus` of the response.
     var httpStatus: HTTPStatus {
         guard let httpResponse = self as? HTTPURLResponse else {
             return .unknown
@@ -15,6 +17,7 @@ extension URLResponse {
         return HTTPStatus(statusCode: httpResponse.statusCode)
     }
 
+    /// The `Headers` included in the response.
     var headers: Headers {
         var headers = [String: String]()
         guard let httpResponse = self as? HTTPURLResponse else {
@@ -27,5 +30,20 @@ extension URLResponse {
             }
         }
         return headers
+    }
+}
+
+extension HTTPURLResponse {
+    convenience init?(
+        request: URLRequest,
+        statusCode: HTTPStatus = .success
+    ) {
+        guard let url = request.url else { return nil }
+        self.init(
+            url: url,
+            statusCode: statusCode.statusCode,
+            httpVersion: nil,
+            headerFields: nil
+        )
     }
 }

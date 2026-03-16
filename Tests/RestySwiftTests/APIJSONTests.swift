@@ -11,21 +11,18 @@ import XCTest
 final class APIJSONTests: XCTestCase {
 
     var api = TestAPI()
-    var sessionProvider: APIDataProvider!
-
-    override func setUp() async throws {
-        sessionProvider = MockDataProvider(api: api)
-    }
 
     func testJsonParsing() async throws {
-        let connector: NetworkConnector = .queue([
-            .unauthorized,
-            .success(Dog.list)
-        ])
+//        let q: Client = )
 
         do {
-            let dogs = try await api.perform(request: DogRequest(),
-                                                connector: connector)
+            let dogs = try await api.perform(
+                request: DogRequest(),
+                client: .queue([
+                    .unauthorized,
+                    .success(Dog.list)
+                ])
+            )
             XCTAssertNotNil(dogs)
         } catch let error {
             print(error)
@@ -33,13 +30,13 @@ final class APIJSONTests: XCTestCase {
     }
 
     func testJsonParsingFailing() async {
-        let connector: NetworkConnector = .queue([
+        let connector: Client = .queue([
             .success(Dog.list)
         ])
 
         let failureMessage = "JSON parsing expected to fail"
         await XCTAssertThrowsErrorAsync(try await api.perform(request: CatRequest(),
-                                                                 connector: connector),
+                                                              client: connector),
                                    failureMessage) { error in
             guard case APIError.invalidJSON = error else {
                 XCTFail(failureMessage)

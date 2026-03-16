@@ -12,11 +12,10 @@ import Foundation
 /// An `API` must specify the baseUrl
 ///
 /// - Properties:
-///   - baseUrl: The base URL for the API.
+///   - url: The base URL for the API.
 ///   - encoder: An optional JSON encoder used for encoding request parameters. Defaults to `JSONEncoder()`.
 ///   - decoder: An optional JSON decoder used for decoding response data. Defaults to `JSONDecoder()`.
-///   - middlewares: An optional array of middlewares that can be applied to the API requests. Defaults to `nil`.
-///   - defaults: An optional set of default settings and configurations for the API. Defaults to `nil`.
+///   - middleware: An optional array of middleware that can be applied to the API requests. Defaults to `nil`.
 ///
 public protocol API {
     /// The base URL for the API.
@@ -30,16 +29,16 @@ public protocol API {
     /// An optional JSON decoder used for decoding response data.
     var decoder: JSONDecoder { get }
 
-    /// An optional array of middlewares that can be applied to the API requests.
-    var middlewares: [Middleware]? { get }
-
-    /// An optional set of default settings for the API.
-    var defaults: RequestDefaults? { get }
+    /// An optional array of middleware that can be applied to the API requests.
+    ///
+    /// Request modifications are applied from first to last, and Response modifications are applied
+    /// last to first.
+    /// 
+    var middleware: [Middleware]? { get }
 }
 
 public extension API {
     var encoder: JSONEncoder { JSONEncoder() }
     var decoder: JSONDecoder { JSONDecoder() }
-    var middlewares: [Middleware]? { nil }
-    var defaults: RequestDefaults? { nil }
+    var middleware: [Middleware]? { nil }
 }
